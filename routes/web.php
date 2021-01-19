@@ -1,5 +1,7 @@
 <?php
 
+use App\Mail\SampleMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,13 +16,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    // Mail::to('johnsuyang2119@gmail.com')->send(new SampleMail());
+
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(['verify' => 'true']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home')->middleware('verified');
