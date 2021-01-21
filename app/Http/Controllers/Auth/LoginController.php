@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
 
 class LoginController extends Controller
 {
@@ -26,7 +28,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    // protected $redirectTo = RouteServiceProvider::HOME;
 
     /**
      * Create a new controller instance.
@@ -41,5 +43,20 @@ class LoginController extends Controller
     public function username()
     {
         return 'username';
+    }
+
+    public function login(Request $request)
+    {
+        $this->validateLogin($request);
+
+        $attempt = Auth::attempt(array_merge($this->credentials($request), ['is_active' => 1]));
+
+        if ($attempt) {
+            return response()->json(['messages' => 'Successfully logged in'], 201);
+        }
+
+        return Auth::attempt(array_merge($this->credentials($request)))
+            ? response()->json(['errors' => 'Your account is inactive'], 401)
+            : $this->sendFailedLoginResponse($request);
     }
 }
