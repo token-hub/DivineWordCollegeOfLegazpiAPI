@@ -39,4 +39,9 @@ class VerificationController extends Controller
         $this->middleware('signed')->only('verify');
         $this->middleware('throttle:6,1')->only('verify', 'resend');
     }
+
+    protected function verified()
+    {
+        return redirect()->away('http://localhost:3000/dashboard/login?messages=Account Successfully activated');
+    }
 }

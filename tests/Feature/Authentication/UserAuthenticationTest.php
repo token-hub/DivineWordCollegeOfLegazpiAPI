@@ -87,7 +87,7 @@ class UserAuthenticationTest extends TestCase
 
         $user = $this->registrationDummy();
 
-        $this->post('/register', $user);
+        $this->json('POST', '/register', $user)->assertStatus(201);
 
         $this->assertDatabaseHas('users', Arr::except($user, ['password_confirmation', 'password']));
 
