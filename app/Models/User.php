@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use App\Notifications\ResetPasswordNotification;
+use App\Jobs\ProcessEmailVerification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -14,6 +15,7 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory;
     use Notifiable;
     use HasApiTokens;
+    use DispatchesJobs;
 
     /**
      * The attributes that are mass assignable.
@@ -48,6 +50,13 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new ResetPasswordNotification($token));
+        ProcessEmailVerification::dispatch($this, $token);
+        // $this->dispatch(new ProcessEmailVerification($this, $token))
+        //     ->delay(now()->addSecondes(5));
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        ProcessEmailVerification::dispatch($this);
     }
 }

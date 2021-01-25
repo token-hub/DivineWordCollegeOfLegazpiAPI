@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessEmailVerification;
+use App\Mail\SampleMail;
+use Illuminate\Support\Facades\Mail;
+
 class HomeController extends Controller
 {
     /**
@@ -11,7 +15,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['auth', 'verified']);
+        // $this->middleware(['auth', 'verified']);
     }
 
     /**
@@ -22,5 +26,12 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
+    }
+
+    public function sample()
+    {
+        // dispatch(new ProcessEmailVerification());
+        ProcessEmailVerification::dispatch();
+        // Mail::to('johnsuyang2119@gmail.com')->send(new SampleMail());
     }
 }
