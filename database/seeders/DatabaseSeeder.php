@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         \App\Models\User::factory()->count(10)->create();
-        \App\Models\User::factory()->create(['username' => 'admin', 'password' => bcrypt('admin'), 'is_active' => 1]);
-        \App\Models\User::factory()->create(['username' => 'admin2', 'password' => bcrypt('admin2'), 'is_active' => 0]);
+        \App\Models\User::factory()->create(['username' => 'admin', 'password' => 'admin', 'is_active' => 1]);
+        \App\Models\User::factory()->create(['username' => 'admin2', 'password' => 'admin2', 'is_active' => 0]);
     }
 }

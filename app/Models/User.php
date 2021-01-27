@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Jobs\ProcessEmailVerification;
+use App\Jobs\ProcessResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -48,11 +50,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function setPasswordAttribute($password)
+    {
+        return $this->attributes['password'] = Hash::make($password);
+    }
+
     public function sendPasswordResetNotification($token)
     {
-        ProcessEmailVerification::dispatch($this, $token);
-        // $this->dispatch(new ProcessEmailVerification($this, $token))
-        //     ->delay(now()->addSecondes(5));
+        ProcessResetPassword::dispatch($this, $token);
     }
 
     public function sendEmailVerificationNotification()

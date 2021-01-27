@@ -12,7 +12,7 @@ abstract class TestCase extends BaseTestCase
 
     public $user;
 
-    public function signIn($user)
+    public function signIn($user = null)
     {
         Sanctum::actingAs($this->user = $user ?? User::factory()->create(), ['*']);
 
