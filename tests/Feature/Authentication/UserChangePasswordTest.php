@@ -1,14 +1,13 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Authentication\Feature;
 
 use Facades\Tests\Setup\UserFactory;
-use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
-class ChangePasswordTest extends TestCase
+class UserChangePasswordTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -38,11 +37,7 @@ class ChangePasswordTest extends TestCase
     /** @test */
     public function unauthenticated_user_cannot_change_password()
     {
-        RequestGuard::macro('logout', function () {
-            $this->user = null;
-        });
-
-        $this->app['auth']->logout();
+        $this->signOut();
 
         $credentials = [
             'current_password' => 'johnjohn',

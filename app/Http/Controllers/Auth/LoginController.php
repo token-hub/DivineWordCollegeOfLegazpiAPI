@@ -52,11 +52,11 @@ class LoginController extends Controller
         $attempt = Auth::attempt(array_merge($this->credentials($request), ['is_active' => 1]));
 
         if ($attempt) {
-            return response()->json(['messages' => 'Successfully logged in'], 201);
+            return response()->json(['message' => 'Successfully logged in.'], 200);
         }
 
         return Auth::attempt(array_merge($this->credentials($request)))
-            ? response()->json(['errors' => 'Your account is inactive'], 401)
+            ? response()->json(['message' => 'Your account is not yet active.'], 200)
             : $this->sendFailedLoginResponse($request);
     }
 }
