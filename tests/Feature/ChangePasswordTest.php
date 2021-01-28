@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Facades\Tests\Setup\UserFactory;
+use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
@@ -21,7 +22,27 @@ class ChangePasswordTest extends TestCase
     /** @test */
     public function authenticated_users_can_change_their_password()
     {
-        $this->withoutExceptionHandling();
+        $credentials = [
+            'current_password' => 'johnjohn',
+            'new_password' => 'johnjohn2',
+            'new_password_confirmation' => 'johnjohn2',
+        ];
+
+        $this->putJson('/api/password/update/'.$this->user->id, $credentials)
+        ->assertStatus(200);
+
+        $this->user->fresh();
+        $this->assertDatabaseHas('users', ['password' => Hash::check($credentials['new_password'], $this->user->password)]);
+    }
+
+    /** @test */
+    public function unauthenticated_user_cannot_change_password()
+    {
+        RequestGuard::macro('logout', function () {
+            $this->user = null;
+        });
+
+        $this->app['auth']->logout();
 
         $credentials = [
             'current_password' => 'johnjohn',
@@ -29,11 +50,23 @@ class ChangePasswordTest extends TestCase
             'new_password_confirmation' => 'johnjohn2',
         ];
 
-        $this->json('PUT', '/api/password/update/'.$this->user->id, $credentials)
-        ->assertStatus(200);
+        $this->putJson('/api/password/update/1', $credentials)
+        ->assertStatus(401);
+    }
 
-        $this->user->fresh();
-        $this->assertDatabaseHas('users', ['password' => Hash::check($credentials['new_password'], $this->user->password)]);
+    /** @test */
+    public function unauthorize_user_cannot_change_password()
+    {
+        $jonny = UserFactory::create();
+
+        $credentials = [
+            'current_password' => 'johnjohn',
+            'new_password' => 'thisIsNotJonnyAccount2',
+            'new_password_confirmation' => 'thisIsNotJonnyAccount2',
+        ];
+
+        $this->putJson('/api/password/update/'.$jonny->id, $credentials)
+        ->assertStatus(403);
     }
 
     /** @test */

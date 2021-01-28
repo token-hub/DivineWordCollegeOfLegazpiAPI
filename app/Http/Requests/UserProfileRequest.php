@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Rules\IsEqualToCurrentPassword;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Gate;
 
-class ChangePasswordRequest extends FormRequest
+class UserProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,10 +24,12 @@ class ChangePasswordRequest extends FormRequest
      */
     public function rules()
     {
+        $current_user_id = auth()->user()->id;
+
         return [
-            'current_password' => ['required', new IsEqualToCurrentPassword()],
-            'new_password' => ['required', 'min:8', 'confirmed'],
-            'new_password_confirmation' => ['required', 'min:8', 'same:new_password'],
+            'name' => 'required',
+            'email' => ['required', 'email', "unique:users,email,{$current_user_id}"],
+            'username' => ['required', "unique:users,username,{$current_user_id}"],
         ];
     }
 }
