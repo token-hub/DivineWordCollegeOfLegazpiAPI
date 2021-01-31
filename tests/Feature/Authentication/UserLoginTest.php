@@ -46,6 +46,10 @@ class UserLoginTest extends TestCase
     {
         UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 0]);
 
+        // 200, cuz, i need to pass the authorization from the login controller
+        // via axios call on the react, if I return a 302 status, it will go to the
+        // catch method of the axios which will not authorize the user
+
         $this->json('post', '/login', ['username' => 'john', 'password' => 'johnjohn'])
            ->assertStatus(200);
     }

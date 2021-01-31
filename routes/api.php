@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChangePasswordController;
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\UserProfileController;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,19 +18,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->group(function () {
-//     Route::get('/test', function () {
-//         return User::all();
-//     });
-
-//     Route::post('/test', function () {
-//         return response()->json('yey');
-//     });
-// });
-
-// Route::get('/test', function () {
-//     return User::all();
-// });
+Route::post('/contactUs', [ContactUsController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -40,8 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/password/profile/{user}', [UserProfileController::class, 'update']);
 });
 
-Route::post('/tokens/create', function (Request $request) {
-    $token = $request->user()->createToken($request->token_name);
+// Route::post('/tokens/create', function (Request $request) {
+//     $token = $request->user()->createToken($request->token_name);
 
-    return ['token' => $token->plainTextToken];
-});
+//     return ['token' => $token->plainTextToken];
+// });
