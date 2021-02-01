@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactUsMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class ContactUsController extends Controller
 {
@@ -15,6 +17,8 @@ class ContactUsController extends Controller
             'subject' => 'required',
             'message' => 'required',
         ]);
+
+        Mail::send(new ContactUsMail($validated));
 
         return response()->json(['message' => 'Your message has been sent'], 200);
     }

@@ -18,7 +18,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/contactUs', [ContactUsController::class, 'store']);
+Route::post('/contactUs', [ContactUsController::class, 'store'])
+    ->middleware('throttle:3,10');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {

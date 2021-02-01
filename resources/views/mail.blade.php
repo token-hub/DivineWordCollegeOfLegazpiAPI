@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title></title>
 </head>
 <body>
-    Hello
+    From: {{ $mail['name'] }}
+    Email: {{ $mail['email'] }}
+    Message: {{ $mail['message'] }}
 </body>
 </html>
