@@ -30,8 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/password/profile/{user}', [UserProfileController::class, 'update']);
 });
 
-// Route::post('/tokens/create', function (Request $request) {
-//     $token = $request->user()->createToken($request->token_name);
+Route::post('/tokens/create', function (Request $request) {
+    $token = $request->user()->createToken($request->token_name);
 
-//     return ['token' => $token->plainTextToken];
-// });
+    return ['token' => $token->plainTextToken];
+});
