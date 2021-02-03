@@ -3,7 +3,6 @@
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\UserProfileController;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -18,9 +17,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/contactUs', [ContactUsController::class, 'store'])
-    ->middleware('throttle:3,10');
-
+Route::post('/contactUs', [ContactUsController::class, 'store'])->middleware('throttle:contactUs');
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
