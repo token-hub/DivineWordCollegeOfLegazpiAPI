@@ -6,8 +6,9 @@
     <title></title>
 </head>
 <body>
-    From: {{ $mail['name'] }}
-    Email: {{ $mail['email'] }}
-    Message: {{ $mail['message'] }}
+    <p><Strong>From :</Strong> {{ $mail['name'] }} </p>
+    <p><Strong>Email :</Strong> {{ $mail['email'] }} </p>
+    <p><Strong>Message:</Strong></p>
+    {{ $mail['message'] }}
 </body>
 </html>

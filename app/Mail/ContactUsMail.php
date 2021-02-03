@@ -30,8 +30,9 @@ class ContactUsMail extends Mailable
      */
     public function build()
     {
-        return $this->to('johnsuyang2118@gmail.com')
-            ->view('view.name')
+        return $this->to('dwclinfo@dwc-legazpi.edu')
+            ->subject($this->mail['subject'])
+            ->view('mail')
             ->with(['mail' => $this->mail]);
     }
 }
