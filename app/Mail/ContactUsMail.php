@@ -30,7 +30,11 @@ class ContactUsMail extends Mailable
      */
     public function build()
     {
+<<<<<<< HEAD
         return $this->to('dwclinfo@dwc-legazpi.edu')
+=======
+        return $this->to('johnsuyang2118@gmail.com')
+>>>>>>> ac4110461f3f37877bea1fdee1527936bfaef239
             ->subject($this->mail['subject'])
             ->view('mail')
             ->with(['mail' => $this->mail]);
