@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Facades\Tests\Setup\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
 class UserProfileTest extends TestCase
@@ -13,7 +14,11 @@ class UserProfileTest extends TestCase
     /** @test */
     public function authenticated_user_can_update_profile()
     {
+        $this->assertCount(0, Activity::all());
+
         $this->signIn();
+
+        $this->assertCount(1, Activity::all());
 
         $credentials = [
             'name' => 'john',
@@ -26,6 +31,10 @@ class UserProfileTest extends TestCase
 
         $this->user->fresh();
         $this->assertDatabaseHas('users', $credentials);
+
+        $this->assertCount(2, Activity::all());
+
+        $this->assertDatabaseHas('activity_log', ['description' => 'A user was updated']);
     }
 
     /** @test */

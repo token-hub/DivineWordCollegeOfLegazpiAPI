@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\LogsController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/contactUs', [ContactUsController::class, 'store'])->middleware('throttle:contactUs');
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -25,6 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/password/update/{user}', [ChangePasswordController::class, 'update']);
     Route::put('/password/profile/{user}', [UserProfileController::class, 'update']);
+
+    Route::get('/logs', [LogsController::class, 'index']);
 });
 
 Route::post('/tokens/create', function (Request $request) {

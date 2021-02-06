@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use function App\Helpers\current_user;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -74,4 +76,11 @@ class RegisterController extends Controller
 
         return $user;
     }
+
+    // protected function registered(Request $request, $user)
+    // {
+    //     activity()
+    //         ->performedOn(current_user())
+    //         ->log('A user registered');
+    // }
 }

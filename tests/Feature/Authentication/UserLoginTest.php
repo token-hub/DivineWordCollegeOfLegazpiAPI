@@ -4,6 +4,7 @@ namespace Tests\Feature\Authentication;
 
 use Facades\Tests\Setup\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
 class UserLoginTest extends TestCase
@@ -26,19 +27,44 @@ class UserLoginTest extends TestCase
     /** @test */
     public function user_can_login_with_correct_credentials()
     {
+        $this->assertCount(0, Activity::all());
+
         UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1]);
+
+        $this->assertCount(1, Activity::all());
 
         $this->json('post', '/login', ['username' => 'john', 'password' => 'johnjohn'])
            ->assertStatus(200);
+
+        $this->assertCount(2, Activity::all());
+
+        $this->assertDatabaseHas('activity_log', ['description' => 'A user logged in']);
     }
 
     /** @test */
-    public function user_with_unverified_account_cannot_login()
+    public function a_user_can_log_out()
     {
-        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'email_verified_at' => null]);
+        $this->withoutExceptionHandling();
+
+        $this->assertCount(0, Activity::all());
+
+        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1]);
+
+        $this->assertCount(1, Activity::all());
 
         $this->json('post', '/login', ['username' => 'john', 'password' => 'johnjohn'])
-           ->assertStatus(302);
+           ->assertStatus(200);
+
+        $this->assertCount(2, Activity::all());
+
+        $this->assertDatabaseHas('activity_log', ['description' => 'A user logged in']);
+
+        $this->json('post', '/logout')
+           ->assertStatus(204);
+
+        $this->assertCount(3, Activity::all());
+
+        $this->assertDatabaseHas('activity_log', ['description' => 'A user logged out']);
     }
 
     /** @test */

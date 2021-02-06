@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
+use function App\Helpers\current_user;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Auth;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class LoginController extends Controller
@@ -52,11 +54,38 @@ class LoginController extends Controller
         $attempt = Auth::attempt(array_merge($this->credentials($request), ['is_active' => 1]));
 
         if ($attempt) {
+            activity()
+                ->performedOn(current_user())
+                ->withProperties(['user' => current_user()->username])
+                ->log('A user logged in');
+
             return response()->json(['message' => 'Successfully logged in.'], 200);
         }
 
         return Auth::attempt(array_merge($this->credentials($request)))
             ? response()->json(['message' => 'Your account is not yet active.'], 200)
             : $this->sendFailedLoginResponse($request);
+    }
+
+    public function logout(Request $request)
+    {
+        activity()
+            ->performedOn(current_user())
+            ->withProperties(['user' => current_user()->username])
+            ->log('A user logged out');
+
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        if ($response = $this->loggedOut($request)) {
+            return $response;
+        }
+
+        return $request->wantsJson()
+            ? new JsonResponse([], 204)
+            : redirect('/');
     }
 }

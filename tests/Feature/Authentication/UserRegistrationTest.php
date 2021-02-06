@@ -7,6 +7,7 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Notification;
+use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
 class UserRegistrationTest extends TestCase
@@ -32,12 +33,17 @@ class UserRegistrationTest extends TestCase
     public function user_can_register_an_account()
     {
         // Notification::fake();
+        $this->assertCount(0, Activity::all());
 
         $user = $this->registrationDummy();
 
         $this->postJson('/register', $user)->assertStatus(201);
 
         $this->assertDatabaseHas('users', Arr::except($user, ['password_confirmation', 'password']));
+
+        $this->assertCount(1, Activity::all());
+
+        $this->assertDatabaseHas('activity_log', ['description' => 'A user was created']);
 
         // Notification::assertSentTo(User::first(), VerifyEmail::class);
 
