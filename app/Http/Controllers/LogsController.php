@@ -11,4 +11,9 @@ class LogsController extends Controller
     {
         return LogsResource::collection(Activity::all());
     }
+
+    public function show($activity)
+    {
+        return  Activity::find($activity);
+    }
 }

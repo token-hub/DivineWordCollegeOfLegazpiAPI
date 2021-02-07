@@ -29,6 +29,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/password/profile/{user}', [UserProfileController::class, 'update']);
 
     Route::get('/logs', [LogsController::class, 'index']);
+    Route::get('/logs/{log}', [LogsController::class, 'show']);
 });
 
 Route::post('/tokens/create', function (Request $request) {
