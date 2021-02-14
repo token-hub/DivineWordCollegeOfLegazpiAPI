@@ -72,8 +72,14 @@ class User extends Authenticatable implements MustVerifyEmail
         ProcessEmailVerification::dispatch($this);
     }
 
+    // remove this method later
     public function permissions()
     {
         return $this->hasMany(Permission::class);
+    }
+
+    public function roles()
+    {
+        return $this->hasMany(Role::class);
     }
 }

@@ -6,20 +6,20 @@ use App\Traits\ActivityLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Permission extends Model
+class Role extends Model
 {
     use HasFactory;
     use ActivityLog;
 
     protected $guarded = [];
 
-    protected $casts = [
-        'created_at' => 'string',
-    ];
-
-    // remove this later
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class);
     }
 }

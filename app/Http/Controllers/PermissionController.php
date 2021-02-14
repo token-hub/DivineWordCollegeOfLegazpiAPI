@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PermissionRequest;
+use App\Http\Resources\PermissionResource;
 use App\Models\Permission;
 
 class PermissionController extends Controller
 {
     public function index()
     {
-        return Permission::all();
+        return PermissionResource::collection(Permission::latest()->get());
     }
 
     public function update(Permission $permission, PermissionRequest $request)

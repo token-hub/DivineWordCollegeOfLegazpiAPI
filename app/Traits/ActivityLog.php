@@ -36,7 +36,13 @@ trait ActivityLog
 
     public function tapActivity(Activity $activity, string $eventName)
     {
-        $id = !$activity->causer_id == null ? $activity->causer_id : $activity->subject_id;
-        $activity->properties = $activity->properties->put('causer', \App\Models\User::find($id)->username);
+        // dump($activity->toArray());
+        // // dump(!$activity->causer_id == null ? '$activity->causer_id' : $activity->subject_id);
+        // // $id = !$activity->causer_id == null ? $activity->causer_id : $activity->subject_id;
+        // // $id = !$activity->causer_id == null ? 1 : $activity->subject_id;
+        if ($activity->causer_id == null) {
+            $activity->causer_id = 1;
+        }
+        $activity->properties = $activity->properties->put('causer', \App\Models\User::find($activity->causer_id)->username);
     }
 }

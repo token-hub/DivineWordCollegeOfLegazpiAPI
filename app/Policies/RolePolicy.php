@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PermissionPolicy
+class RolePolicy
 {
     use HandlesAuthorization;
 
@@ -16,10 +16,10 @@ class PermissionPolicy
      */
     public function viewAny(User $user)
     {
-        dump('hereeeee2!');
+        return true;
 
         return $user->permissions->pluck('description')
-            ->intersect(['view permission', 'update permission'])
+            ->intersect(['view role', 'update role'])
             ->count() > 0;
     }
 }

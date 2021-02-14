@@ -88,7 +88,6 @@ class PermissionTest extends TestCase
     /** @test */
     public function authorized_user_that_pass_an_unchange_data_to_update_permission_must_return_un_unchanged_response()
     {
-        $this->withoutExceptionHandling();
         /*
             Given we have an authorized and authenticated user that has permission to update a permission
             And we have permissions that the user can changed

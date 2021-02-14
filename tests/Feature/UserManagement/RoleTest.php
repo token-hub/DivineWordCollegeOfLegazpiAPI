@@ -2,12 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\User;
+use Facades\Tests\Setup\RolePermissionFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
 class RoleTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->signIn();
+    }
 
     /** @test */
     public function it_must_have_required_fields()
@@ -17,6 +29,17 @@ class RoleTest extends TestCase
             When the user submitted an empty field that is required
             Then the creation must be canceled and an error response must be thrown
         */
+        RolePermissionFactory::user($this->user)
+            ->permissionsCount(2)
+            ->roleParams(['description' => 'admin'])
+            ->create();
+
+        $this->assertCount(4, Activity::all());
+
+        $this->postJson('/api/roles', [])
+            ->assertJsonValidationErrors(['permission', 'description']);
+
+        $this->assertCount(4, Activity::all());
     }
 
     /** @test */
@@ -28,11 +51,25 @@ class RoleTest extends TestCase
             Then the creation of the new role must be canceled
             And must return an error response
         */
+
+        RolePermissionFactory::user($this->user)
+            ->permissionsCount(2)
+            ->roleParams(['description' => 'admin'])
+            ->create();
+
+        $this->assertCount(4, Activity::all());
+
+        $this->postJson('/api/roles', ['description' => 'admin'])
+            ->assertJsonValidationErrors('description');
+
+        $this->assertCount(4, Activity::all());
     }
 
     /** @test */
     public function authorized_user_can_create_new_role()
     {
+        $this->withoutExceptionHandling();
+
         /*
             Given we have an authorized and authenticated user that has permission to create a role
             When the user submitted all the required fields
@@ -40,6 +77,25 @@ class RoleTest extends TestCase
             And It must return a proper response to the user
             And and a new activity for role creation must be created too
         */
+
+        RolePermissionFactory::user($this->user)
+            ->roleParams(['description' => 'admin'])
+            ->permissionsCount(2)
+            ->permissionParams(['description' => 'create role'])
+            ->create();
+
+        $this->assertCount(4, Activity::all());
+
+        $this->postJson('/api/roles', ['description' => 'new role', 'permission' => Permission::first()->id])
+            ->assertExactJson(['message' => 'New role successfully added']);
+
+        $this->assertDatabaseHas('Roles', ['description' => 'new role']);
+
+        $latestRolePermissions = Role::all()->last()->permissions->pluck('id')->first();
+
+        $this->assertSame($latestRolePermissions, Permission::first()->id);
+
+        $this->assertCount(5, Activity::all());
     }
 
     /** @test */
