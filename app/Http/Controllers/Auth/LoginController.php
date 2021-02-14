@@ -56,7 +56,7 @@ class LoginController extends Controller
         if ($attempt) {
             activity()
                 ->performedOn(current_user())
-                ->withProperties(['user' => current_user()->username])
+                ->withProperties(['causer' => current_user()->username])
                 ->log('A user logged in');
 
             return response()->json(['message' => 'Successfully logged in.'], 200);
@@ -71,7 +71,7 @@ class LoginController extends Controller
     {
         activity()
             ->performedOn(current_user())
-            ->withProperties(['user' => current_user()->username])
+            ->withProperties(['causer' => current_user()->username])
             ->log('A user logged out');
 
         $this->guard()->logout();

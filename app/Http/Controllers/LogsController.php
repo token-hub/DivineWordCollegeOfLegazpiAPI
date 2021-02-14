@@ -9,11 +9,11 @@ class LogsController extends Controller
 {
     public function index()
     {
-        return LogsResource::collection(Activity::all());
+        return LogsResource::collection(Activity::latest()->get());
     }
 
     public function show($activity)
     {
-        return  Activity::find($activity);
+        return Activity::find($activity);
     }
 }

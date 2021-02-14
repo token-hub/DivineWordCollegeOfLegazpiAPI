@@ -16,14 +16,16 @@ class UserChangePasswordTest extends TestCase
     {
         parent::setUp();
 
+        activity()->disableLogging();
         // this will log a user in the database, Activity count = 1
         $this->signIn(UserFactory::create(['password' => 'johnjohn']));
+        activity()->enableLogging();
     }
 
     /** @test */
     public function authenticated_users_can_change_their_password()
     {
-        $this->assertCount(1, Activity::all());
+        $this->withoutExceptionHandling();
 
         $credentials = [
             'current_password' => 'johnjohn',
@@ -34,12 +36,11 @@ class UserChangePasswordTest extends TestCase
         $this->putJson('/api/password/update/'.$this->user->id, $credentials)
         ->assertStatus(200);
 
-        $this->user->fresh();
-        $this->assertDatabaseHas('users', ['password' => Hash::check($credentials['new_password'], $this->user->password)]);
+        $this->user->refresh();
 
-        $this->assertCount(2, Activity::all());
-
-        $this->assertDatabaseHas('activity_log', ['description' => 'A user was updated']);
+        // dd($this->user->password);
+        $this->assertTrue(Hash::check($credentials['new_password'], $this->user->password));
+        // $this->assertDatabaseHas('users', ['password' => Hash::make($credentials['new_password'])]);
     }
 
     /** @test */

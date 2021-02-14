@@ -33,6 +33,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'username',
     ];
 
+    // protected $guarded = [];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -52,9 +54,12 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
-    public function setPasswordAttribute($password)
+    public function setPasswordAttribute($value)
     {
-        return $this->attributes['password'] = Hash::make($password);
+        if (Hash::needsRehash($value)) {
+            $value = Hash::make($value);
+        }
+        $this->attributes['password'] = $value;
     }
 
     public function sendPasswordResetNotification($token)
@@ -65,5 +70,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         ProcessEmailVerification::dispatch($this);
+    }
+
+    public function permissions()
+    {
+        return $this->hasMany(Permission::class);
     }
 }

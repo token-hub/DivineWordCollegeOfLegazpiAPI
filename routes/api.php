@@ -3,6 +3,7 @@
 use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\LogsController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -26,10 +27,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::put('/password/update/{user}', [ChangePasswordController::class, 'update']);
-    Route::put('/password/profile/{user}', [UserProfileController::class, 'update']);
+    Route::put('/profile/{user}', [UserProfileController::class, 'update']);
 
     Route::get('/logs', [LogsController::class, 'index']);
     Route::get('/logs/{log}', [LogsController::class, 'show']);
+
+    Route::get('/permissions', [PermissionController::class, 'index']);
+    Route::put('/permissions/{permission}', [PermissionController::class, 'update']);
 });
 
 Route::post('/tokens/create', function (Request $request) {

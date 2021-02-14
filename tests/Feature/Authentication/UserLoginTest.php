@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Authentication;
 
+use App\Models\User;
 use Facades\Tests\Setup\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
@@ -50,7 +51,7 @@ class UserLoginTest extends TestCase
 
         UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1]);
 
-        $this->assertCount(1, Activity::all());
+        $this->assertCount(1, User::all());
 
         $this->json('post', '/login', ['username' => 'john', 'password' => 'johnjohn'])
            ->assertStatus(200);
@@ -70,6 +71,8 @@ class UserLoginTest extends TestCase
     /** @test */
     public function user_cannot_login_with_inactive_account()
     {
+        $this->withoutExceptionHandling();
+
         UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 0]);
 
         // 200, cuz, i need to pass the authorization from the login controller

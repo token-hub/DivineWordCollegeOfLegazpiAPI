@@ -28,10 +28,11 @@ class LogTest extends TestCase
     public function log_request_to_view_a_specific_log()
     {
         $this->signIn();
-
+        $this->assertCount(1, Activity::all());
         $response = $this->getJson('/api/logs/1')->assertOk();
 
         $data = $response->baseResponse->original->toArray();
+
         $this->assertSame(1, $data['id']);
         $this->assertSame('A user was created', $data['description']);
     }

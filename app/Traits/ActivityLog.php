@@ -17,6 +17,16 @@ trait ActivityLog
 
     protected static $ignoreChangedAttributes = ['remember_token'];
 
+    protected static $logAttributesToIgnore = [
+        'id',
+        'updated_at',
+        'created_at',
+        'password',
+        'email_verified_at',
+        'is_active',
+        'remember_token',
+    ];
+
     public function getDescriptionForEvent(string $eventName): string
     {
         $className = strtolower(class_basename(static::class));
@@ -26,6 +36,7 @@ trait ActivityLog
 
     public function tapActivity(Activity $activity, string $eventName)
     {
-        $activity->properties = ['user' => \App\Models\User::find($activity->subject_id)->username];
+        $id = !$activity->causer_id == null ? $activity->causer_id : $activity->subject_id;
+        $activity->properties = $activity->properties->put('causer', \App\Models\User::find($id)->username);
     }
 }

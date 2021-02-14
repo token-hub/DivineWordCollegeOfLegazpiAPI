@@ -26,7 +26,7 @@ class UserProfileTest extends TestCase
             'username' => 'username',
         ];
 
-        $this->putJson('/api/password/profile/'.$this->user->id, $credentials)
+        $this->putJson('/api/profile/'.$this->user->id, $credentials)
         ->assertStatus(200);
 
         $this->user->fresh();
@@ -42,14 +42,14 @@ class UserProfileTest extends TestCase
     {
         $this->signIn();
 
-        $this->putJson('/api/password/profile/'.$this->user->id, [])
+        $this->putJson('/api/profile/'.$this->user->id, [])
         ->assertJsonValidationErrors(['name', 'email', 'username']);
     }
 
     /** @test */
     public function unauthenticated_user_cannot_update_profile()
     {
-        $this->putJson('/api/password/profile/1', [])
+        $this->putJson('/api/profile/1', [])
         ->assertStatus(401);
     }
 
@@ -66,7 +66,7 @@ class UserProfileTest extends TestCase
             'username' => 'thisIsNotJonnysAccount',
         ];
 
-        $this->putJson('/api/password/profile/'.$johnny->id, $credentials)
+        $this->putJson('/api/profile/'.$johnny->id, $credentials)
         ->assertStatus(403);
     }
 
@@ -83,7 +83,7 @@ class UserProfileTest extends TestCase
             'username' => $jonny->username,
         ];
 
-        $this->putJson('/api/password/profile/'.$this->user->id, $credentials)
+        $this->putJson('/api/profile/'.$this->user->id, $credentials)
         ->assertJsonValidationErrors(['username']);
     }
 
@@ -100,7 +100,7 @@ class UserProfileTest extends TestCase
             'username' => 'johnjohn',
         ];
 
-        $this->putJson('/api/password/profile/'.$this->user->id, $credentials)
+        $this->putJson('/api/profile/'.$this->user->id, $credentials)
             ->assertJsonValidationErrors(['email']);
 
         $credentials2 = [
@@ -109,7 +109,7 @@ class UserProfileTest extends TestCase
             'username' => 'johnjohn',
         ];
 
-        $this->putJson('/api/password/profile/'.$this->user->id, $credentials2)
+        $this->putJson('/api/profile/'.$this->user->id, $credentials2)
         ->assertStatus(200);
     }
 }
