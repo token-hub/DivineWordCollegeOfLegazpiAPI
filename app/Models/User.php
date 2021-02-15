@@ -54,6 +54,11 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function isAdmin()
+    {
+        return $this->roles->pluck('description')->contains('admin');
+    }
+
     public function setPasswordAttribute($value)
     {
         if (Hash::needsRehash($value)) {
@@ -70,12 +75,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         ProcessEmailVerification::dispatch($this);
-    }
-
-    // remove this method later
-    public function permissions()
-    {
-        return $this->hasMany(Permission::class);
     }
 
     public function roles()

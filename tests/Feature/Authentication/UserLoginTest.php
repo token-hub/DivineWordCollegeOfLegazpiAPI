@@ -45,8 +45,6 @@ class UserLoginTest extends TestCase
     /** @test */
     public function a_user_can_log_out()
     {
-        $this->withoutExceptionHandling();
-
         $this->assertCount(0, Activity::all());
 
         UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1]);
@@ -71,8 +69,6 @@ class UserLoginTest extends TestCase
     /** @test */
     public function user_cannot_login_with_inactive_account()
     {
-        $this->withoutExceptionHandling();
-
         UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 0]);
 
         // 200, cuz, i need to pass the authorization from the login controller

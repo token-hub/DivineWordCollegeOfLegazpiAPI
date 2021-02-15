@@ -51,9 +51,9 @@ class RolePermissionFactory
 
     public function create()
     {
-        $this->user ?? User::factory()->create();
+        $this->user = $this->user ?? User::factory()->create();
 
-        Role::factory()->for($this->user)
+        return Role::factory()->for($this->user)
             ->count($this->rolesCount)
             ->create($this->roleParams)
                 ->each(function ($role) {

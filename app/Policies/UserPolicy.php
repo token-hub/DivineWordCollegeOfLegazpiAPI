@@ -3,12 +3,9 @@
 namespace App\Policies;
 
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy
+class UserPolicy extends BasePolicy
 {
-    use HandlesAuthorization;
-
     public function update(User $user, User $model)
     {
         return $user->is($model);

@@ -3,13 +3,10 @@
 namespace Tests\Setup;
 
 use App\Models\Permission;
-use App\Models\User;
-use Facades\Tests\Setup\UserFactory;
 
 class PermissionFactory
 {
     public $count = 1;
-    public $user = null;
 
     public function count($cnt)
     {
@@ -18,17 +15,8 @@ class PermissionFactory
         return $this;
     }
 
-    public function user($user = null)
-    {
-        $this->user = $user ?? UserFactory::create();
-
-        return $this;
-    }
-
     public function create($params = [])
     {
-        Permission::factory()->for($this->user)->count($this->count)->create($params);
-
-        return $this;
+        return Permission::factory()->count($this->count)->create($params);
     }
 }

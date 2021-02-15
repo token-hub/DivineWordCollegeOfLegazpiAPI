@@ -13,13 +13,9 @@ class Permission extends Model
 
     protected $guarded = [];
 
+    protected $hidden = ['pivot'];
+
     protected $casts = [
         'created_at' => 'string',
     ];
-
-    // remove this later
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 }

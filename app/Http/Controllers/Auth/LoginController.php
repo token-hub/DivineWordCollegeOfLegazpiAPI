@@ -55,7 +55,8 @@ class LoginController extends Controller
 
         if ($attempt) {
             activity()
-                ->performedOn(current_user())
+                ->on(current_user())
+                ->by(current_user())
                 ->withProperties(['causer' => current_user()->username])
                 ->log('A user logged in');
 
@@ -70,7 +71,8 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         activity()
-            ->performedOn(current_user())
+            ->on(current_user())
+            ->by(current_user())
             ->withProperties(['causer' => current_user()->username])
             ->log('A user logged out');
 

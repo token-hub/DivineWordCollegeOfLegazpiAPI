@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 
-class RolesRequest extends FormRequest
+class RoleUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,9 +14,7 @@ class RolesRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
-
-        return Gate::allows('viewAny');
+        return $this->user()->can('viewAny', new Role());
     }
 
     /**
@@ -28,7 +26,7 @@ class RolesRequest extends FormRequest
     {
         return [
             'description' => ['required', 'unique:roles'],
-            'permission' => ['required', 'exists:permissions,id'],
+            'permissions' => ['required', 'exists:permissions,id'],
         ];
     }
 }

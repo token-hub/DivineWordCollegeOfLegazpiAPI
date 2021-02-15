@@ -2,24 +2,17 @@
 
 namespace App\Policies;
 
+use App\Models\Role;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
-class RolePolicy
+class RolePolicy extends BasePolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @return mixed
-     */
-    public function viewAny(User $user)
+    public function viewAny(User $user, Role $role)
     {
-        return true;
-
-        return $user->permissions->pluck('description')
-            ->intersect(['view role', 'update role'])
-            ->count() > 0;
+        // check for role create, view, update role permissions on each
+        // permissions that the user role/s has and returns a boolean value
+        return $user->roles->flatmap(function ($role) {
+            return $role->permissions->pluck('description')->unique();
+        })->intersect(['view role', 'update role', 'create role', 'delete role'])->count() > 0;
     }
 }

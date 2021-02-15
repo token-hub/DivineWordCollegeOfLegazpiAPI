@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PermissionRequest extends FormRequest
+class RoleStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +14,7 @@ class PermissionRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('viewAny', $this->route('permission'));
+        return $this->user()->can('viewAny', new Role());
     }
 
     /**
@@ -24,7 +25,8 @@ class PermissionRequest extends FormRequest
     public function rules()
     {
         return [
-            'description' => 'required',
+            'description' => ['required', 'unique:roles'],
+            'permissions' => ['required', 'exists:permissions,id'],
         ];
     }
 }

@@ -33,10 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/logs', [LogsController::class, 'index']);
     Route::get('/logs/{log}', [LogsController::class, 'show']);
 
-    Route::get('/permissions', [PermissionController::class, 'index']);
-    Route::put('/permissions/{permission}', [PermissionController::class, 'update']);
+    Route::get('/permissions', PermissionController::class);
 
+    Route::get('/roles', [RolesController::class, 'index']);
     Route::post('/roles', [RolesController::class, 'store']);
+    Route::get('/roles/{role}', [RolesController::class, 'show']);
+    Route::put('/roles/{role}', [RolesController::class, 'update']);
+    Route::delete('/roles/{role}', [RolesController::class, 'destroy']);
 });
 
 Route::post('/tokens/create', function (Request $request) {
