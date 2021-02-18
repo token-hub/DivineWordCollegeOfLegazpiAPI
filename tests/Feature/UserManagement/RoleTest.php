@@ -7,6 +7,7 @@ use App\Models\Role;
 use Facades\Tests\Setup\PermissionFactory;
 use Facades\Tests\Setup\RoleFactory;
 use Facades\Tests\Setup\RolePermissionFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -78,7 +79,7 @@ class RoleTest extends TestCase
         $this->getRolesAndPermissions('create role');
 
         $this->assertCount(4, Activity::all());
-
+        
         $this->postJson('/api/roles', ['description' => 'new role', 'permissions' => Permission::first()->id])
             ->assertExactJson(['message' => 'New role successfully added']);
 
@@ -101,7 +102,7 @@ class RoleTest extends TestCase
         $this->assertCount(5, Activity::all());
 
         tap($role->first(), function ($role) use ($newPermission) {
-            $this->putJson('/api/roles/'.$role->id, ['description' => 'admin2', 'permission' => $newPermission->id])
+            $this->putJson('/api/roles/'.$role->id, ['description' => 'admin2', 'permissions' => $newPermission->id])
             ->assertExactJson(['message' => 'Role was successfully updated']);
 
             $this->assertCount(6, Activity::all());
@@ -116,15 +117,15 @@ class RoleTest extends TestCase
     /** @test */
     public function authorized_user_can_delete_roles()
     {
-        $this->withoutExceptionHandling();
-
         $role = $this->getRolesAndPermissions('delete role');
 
         $this->assertCount(4, Activity::all());
-
-        tap($role->first()->id, function ($roleId) {
-            $this->deleteJson('/api/roles/'.serialize([1]))
-            ->assertExactJson(['message' => 'Role was successfully deleted']);
+ 
+        tap($role->first()->id, function ($roleId) use ($role) {
+            $str = trim(preg_replace('/\s*\([^)]*\)/', '', implode("", $role->pluck('id')->toArray())));
+       
+            $this->deleteJson('/api/roles/'.$str)
+            ->assertExactJson(['message' => 'Role/s was successfully deleted']);
 
             $this->assertCount(5, Activity::all());
 

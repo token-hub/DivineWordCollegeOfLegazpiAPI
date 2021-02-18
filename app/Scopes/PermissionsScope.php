@@ -11,7 +11,7 @@ class PermissionsScope implements Scope
     public function apply(Builder $builder, Model $model)
     {
         $builder->with('permissions', function($q){
-            $q->select(['description']);
+            $q->select(['permissions.id', 'description']);
         });
     }
 }

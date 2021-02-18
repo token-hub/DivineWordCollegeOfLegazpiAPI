@@ -18,7 +18,7 @@ abstract class TestCase extends BaseTestCase
     {
         Activity::truncate();
 
-        Sanctum::actingAs($this->user = $user ?? User::factory()->create(), ['*']);
+        Sanctum::actingAs($this->user = $user ?? User::factory()->create()->first(), ['*']);
 
         return $this;
     }

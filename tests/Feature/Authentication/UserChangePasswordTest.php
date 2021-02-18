@@ -2,6 +2,7 @@
 
 namespace Tests\Authentication\Feature;
 
+use App\Models\User;
 use Facades\Tests\Setup\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -17,16 +18,13 @@ class UserChangePasswordTest extends TestCase
         parent::setUp();
 
         activity()->disableLogging();
-        // this will log a user in the database, Activity count = 1
-        $this->signIn(UserFactory::create(['password' => 'johnjohn']));
+        $this->signIn(UserFactory::create(['password' => 'johnjohn'])->first());
         activity()->enableLogging();
     }
 
     /** @test */
     public function authenticated_users_can_change_their_password()
     {
-        $this->withoutExceptionHandling();
-
         $credentials = [
             'current_password' => 'johnjohn',
             'new_password' => 'johnjohn2',
@@ -38,9 +36,7 @@ class UserChangePasswordTest extends TestCase
 
         $this->user->refresh();
 
-        // dd($this->user->password);
         $this->assertTrue(Hash::check($credentials['new_password'], $this->user->password));
-        // $this->assertDatabaseHas('users', ['password' => Hash::make($credentials['new_password'])]);
     }
 
     /** @test */
@@ -61,7 +57,7 @@ class UserChangePasswordTest extends TestCase
     /** @test */
     public function unauthorize_user_cannot_change_password()
     {
-        $jonny = UserFactory::create();
+        $jonny = UserFactory::create()->first();
 
         $credentials = [
             'current_password' => 'johnjohn',

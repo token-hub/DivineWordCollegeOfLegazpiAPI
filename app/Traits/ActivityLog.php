@@ -23,7 +23,6 @@ trait ActivityLog
         'created_at',
         'password',
         'email_verified_at',
-        'is_active',
         'remember_token',
     ];
 

@@ -29,7 +29,7 @@ class UserProfileTest extends TestCase
         $this->putJson('/api/profile/'.$this->user->id, $credentials)
         ->assertStatus(200);
 
-        $this->user->fresh();
+        $this->user->refresh();
         $this->assertDatabaseHas('users', $credentials);
 
         $this->assertCount(2, Activity::all());
@@ -58,7 +58,7 @@ class UserProfileTest extends TestCase
     {
         $this->signIn();
 
-        $johnny = UserFactory::create();
+        $johnny = UserFactory::create()->first();
 
         $credentials = [
             'name' => 'thisIsNotJonnysAccount',
@@ -75,7 +75,7 @@ class UserProfileTest extends TestCase
     {
         $this->signIn();
 
-        $jonny = UserFactory::create(['username' => 'johnny']);
+        $jonny = UserFactory::create(['username' => 'johnny'])->first();
 
         $credentials = [
             'name' => 'john',
@@ -92,7 +92,7 @@ class UserProfileTest extends TestCase
     {
         $this->signIn();
 
-        $jonny = UserFactory::create(['email' => 'johnny@doe.com']);
+        $jonny = UserFactory::create(['email' => 'johnny@doe.com'])->first();
 
         $credentials = [
             'name' => 'john',

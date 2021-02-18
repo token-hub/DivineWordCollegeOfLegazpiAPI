@@ -12,6 +12,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\Traits\CausesActivity;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -20,6 +21,9 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasApiTokens;
     use DispatchesJobs;
     use ActivityLog;
+    use CausesActivity;
+
+    protected static $recordEvents = ['created', 'updated'];
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +35,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'username',
+        'is_active'
     ];
 
     // protected $guarded = [];

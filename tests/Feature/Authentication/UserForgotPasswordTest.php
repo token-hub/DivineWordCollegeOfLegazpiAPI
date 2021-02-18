@@ -17,10 +17,10 @@ class UserForgotPasswordTest extends TestCase
 
         // Notification::fake();
 
-        $user = UserFactory::create();
+        $user = UserFactory::create()->first();
 
         $this->post('/password/email', ['email' => $user->email]);
-        $user->fresh();
+        $user->refresh();
 
         $this->assertNotNull($user->email_verified_at);
 

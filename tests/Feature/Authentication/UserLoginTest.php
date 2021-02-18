@@ -30,7 +30,7 @@ class UserLoginTest extends TestCase
     {
         $this->assertCount(0, Activity::all());
 
-        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1]);
+        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1])->first();
 
         $this->assertCount(1, Activity::all());
 
@@ -47,7 +47,7 @@ class UserLoginTest extends TestCase
     {
         $this->assertCount(0, Activity::all());
 
-        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1]);
+        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 1])->first();
 
         $this->assertCount(1, User::all());
 
@@ -69,7 +69,7 @@ class UserLoginTest extends TestCase
     /** @test */
     public function user_cannot_login_with_inactive_account()
     {
-        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 0]);
+        UserFactory::create(['username' => 'john', 'password' => 'johnjohn', 'is_active' => 0])->first();
 
         // 200, cuz, i need to pass the authorization from the login controller
         // via axios call on the react, if I return a 302 status, it will go to the
@@ -84,7 +84,7 @@ class UserLoginTest extends TestCase
     {
         $this->get('/home')->assertRedirect('/email/verify');
 
-        $user = UserFactory::create(['email_verified_at' => null]);
+        $user = UserFactory::create(['email_verified_at' => null])->first();
 
         $this->signIn($user);
 

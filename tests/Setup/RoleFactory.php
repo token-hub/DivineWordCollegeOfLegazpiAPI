@@ -26,7 +26,7 @@ class RoleFactory
 
     public function create()
     {
-        $this->user = $this->user ?? User::factory()->create();
+        $this->user = $this->user ?? User::factory()->create()->first();
 
         return Role::factory()->for($this->user)->create($this->roleParams);
     }

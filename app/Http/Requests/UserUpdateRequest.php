@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 
-class UserProfileRequest extends FormRequest
+class UserUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class UserProfileRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('update', $this->route('user'));
+        return $this->user()->can('viewAny', new User());
     }
 
     /**
@@ -24,12 +24,8 @@ class UserProfileRequest extends FormRequest
      */
     public function rules()
     {
-        $current_user_id = auth()->user()->id;
-
         return [
-            'name' => 'required',
-            'email' => ['required', 'email', "unique:users,email,{$current_user_id}"],
-            'username' => ['required', "unique:users,username,{$current_user_id}"],
+            'is_active' => 'required'
         ];
     }
 }

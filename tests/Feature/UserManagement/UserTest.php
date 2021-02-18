@@ -2,70 +2,131 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Models\User;
+use Facades\Tests\Setup\RolePermissionFactory;
+use Facades\Tests\Setup\UserFactory;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
 class UserTest extends TestCase
 {
-    use RegistersUsers;
+    use RefreshDatabase;
+
+    public function setUp() : void
+    {
+        parent::setUp();
+
+        $this->signIn();
+    }
 
     /** @test */
     public function authorized_user_can_view_all_users()
     {
-        /*
-            Given we have an authorized and authenticated user that has permission to view user account
-            And we have users that the user can view
-            When he visits the user page
-            Then the user must see all the users
-        */
+        $this->getRolesUsersPermissionsAndAssertActivities('view user');
+
+        $response = $this->getJson('/api/users')->assertOk();
+
+        $response->assertJsonFragment(['username' => User::first()->username]);
+
+        $this->assertSame($response->baseResponse->original->count(), 4);
     }
 
     /** @test */
-    public function authorized_user_can_view_a_user()
+    public function authorized_user_can_view_a_specific_user()
     {
-        /*
-            Given we have an authorized and authenticated user that has permission to be a user account
-            And we have users that the user can view
-            When the user wants to view a specific user
-            Then the user must see that user
-        */
+        $this->getRolesUsersPermissionsAndAssertActivities('view user');
+
+        $response = $this->getJson("/api/users/{$this->user->id}")->assertOk();
+
+        $this->assertSame($response->baseResponse->original->username, $this->user->username);       
     }
 
     /** @test */
     public function authorized_user_can_delete_a_user()
     {
-        /*
-            Given we have an authorized and authenticated user that has permission to delete user account
-            And we have users that the user can delete
-            When that user wants to delete user account/s
-            Then that user account/s must be deleted in the system
-            And It must return a proper response to the user
-            And a new activity log for user account deletion must be created too
-        */
+        $this->getRolesUsersPermissionsAndAssertActivities('delete user');
+
+        $id = User::latest()->get()->first()->id;
+
+        $this->deleteJson("/api/users/{$id}")
+            ->assertOk()
+            ->assertJson(['message' => 'User successfully delete']);
+
+        $this->assertDatabaseMissing('activity_log', ['causer_id' => $id]);
+
+        $this->assertDatabaseMissing('users', ['id' => $id]);
     }
 
     /** @test */
-    public function authorized_user_can_activate_or_deactivate_a_user()
+    public function authorized_user_can_activate_a_user()
     {
-        /*
-            Given we have an authenticated and authorized user that has permission to activate/deactivate user account
-            And we have users that the user can activate or deactivate
-            When that authorized user, deactivates a user
-            then that deactivated account must not avaible to login in the system,
-            And a new activity log for user account deactivation must be created too
-            When the authorized user, activated again that account,
-            then the user that owns that account may again login in the system
-            And a new activity log for user account activation must be created too
-        */
+        $this->getRolesUsersPermissionsAndAssertActivities('activate user');
+        
+        $user = User::latest()->get()->last();
+        
+        $this->putJson("/api/users/{$user->id}", ['is_active' => 1])
+            ->assertOk()
+            ->assertJson(['message' => 'User account successfully activated']);
+
+        $user->refresh();
+
+        $this->assertCount(8, Activity::all());
+
+        $this->assertSame($user->is_active, '1');
+    }
+
+    /** @test */
+    public function authorized_user_can_deactivate_a_user()
+    {
+        $this->getRolesUsersPermissionsAndAssertActivities('deactivate user', null, ['is_active' => 1]);
+        
+        $user = User::latest()->get()->last();
+        
+        $this->putJson("/api/users/{$user->id}", ['is_active' => 0])
+            ->assertOk()
+            ->assertJson(['message' => 'User account successfully deactivated']);
+
+        $user->refresh();
+
+        $this->assertCount(8, Activity::all());
+
+        $this->assertSame($user->is_active, '0');
     }
 
     /** @test */
     public function unauthorized_user_must_not_access_any_user_methods_or_pages()
     {
-        /*
-            Given we have an unauthorized and unauthenticated user
-            When it try's to access and user pages or do and user methods,
-            Then an error response must be thrown
-        */
+        $this->signOut();
+
+        $this->getRolesAndPermissions('view role', null, ['description' => 'notAdmin']);
+
+        $this->getJson('/api/users')->assertStatus(401);
+
+        $this->signIn($this->user);
+
+        $this->getJson('/api/users')->assertStatus(403);
+        $this->putJson('/api/users/1', ['is_active' => 1])->assertStatus(403);
+        $this->getJson('/api/users/1')->assertStatus(403);
+        $this->deleteJson('/api/users/1')->assertStatus(403);
+    }
+
+    public function getRolesAndPermissions($permission = '', $roleCnt = 1, $roleParams = ['description' => 'admin'])
+    {
+        return RolePermissionFactory::user($this->user)
+            ->roleParams($roleParams)
+            ->rolesCount($roleCnt)
+            ->permissionsCount(2)
+            ->permissionParams(['description' => $permission])
+            ->create();
+    }
+
+    public function getRolesUsersPermissionsAndAssertActivities($permission = '', $roleCnt = 1, $userParams = [])
+    {
+        $this->getRolesAndPermissions($permission, $roleCnt);
+
+        UserFactory::count(3)->create($userParams);
+
+        $this->assertCount(7, Activity::all());
     }
 }

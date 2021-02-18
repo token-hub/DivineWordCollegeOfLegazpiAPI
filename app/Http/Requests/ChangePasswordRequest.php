@@ -15,7 +15,7 @@ class ChangePasswordRequest extends FormRequest
      */
     public function authorize()
     {
-        return Gate::allows('update', $this->route('user'));
+        return $this->user()->can('update', $this->route('user'));
     }
 
     /**
