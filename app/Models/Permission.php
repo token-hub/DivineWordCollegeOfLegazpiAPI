@@ -14,8 +14,4 @@ class Permission extends Model
     protected $guarded = [];
 
     protected $hidden = ['pivot'];
-
-    protected $casts = [
-        'created_at' => 'string',
-    ];
 }

@@ -24,7 +24,7 @@ class LogsResource extends JsonResource
             'causer_type' => $this->causer_type,
             'causer_id' => $this->causer_id,
             'properties' => $this->properties,
-            'created_at' => (string) $this->created_at,
+            'created_at' => $this->created_at->format('M d, Y | h:i A'),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\RequestGuard;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -16,10 +17,9 @@ abstract class TestCase extends BaseTestCase
 
     public function signIn($user = null)
     {
-        Activity::truncate();
-
-        Sanctum::actingAs($this->user = $user ?? User::factory()->create()->first(), ['*']);
-
+        activity()->disableLogging();
+        Sanctum::actingAs($this->user = $user ?? User::factory()->has(Role::factory(['description'=>'admin']))->create(['is_active' => 1]), ['*']);
+        activity()->enableLogging();
         return $this;
     }
 

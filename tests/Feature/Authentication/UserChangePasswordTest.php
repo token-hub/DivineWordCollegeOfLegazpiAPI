@@ -16,10 +16,8 @@ class UserChangePasswordTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        activity()->disableLogging();
+        
         $this->signIn(UserFactory::create(['password' => 'johnjohn'])->first());
-        activity()->enableLogging();
     }
 
     /** @test */

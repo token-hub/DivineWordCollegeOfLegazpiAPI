@@ -23,9 +23,8 @@ class UserController extends Controller
     {   
         $user->update($request->validated());
 
-        $state = $user->is_active === 1 ? 'activated' : 'deactivated';
-
-        return response()->json(['message' => "User account successfully {$state}"], 200);
+        $state = $user->fresh()->is_active == 1 ? 'activated' : 'deactivated';
+        return response()->json(['message' => "User account was successfully {$state}"], 200);
     }
 
     public function destroy(User $user, UserViewAnyRequest $request)

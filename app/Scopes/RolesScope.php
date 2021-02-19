@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
-class PermissionsScope implements Scope
+class RolesScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        $builder->with('permissions:id,description');
+        $builder->with('roles:id,description,user_id');
     }
 }

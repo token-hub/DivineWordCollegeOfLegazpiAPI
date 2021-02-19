@@ -13,7 +13,9 @@ class UserUpdateRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
+    {   
+        // dump($this->user()->can('viewAny', new User()));
+        // return true;
         return $this->user()->can('viewAny', new User());
     }
 

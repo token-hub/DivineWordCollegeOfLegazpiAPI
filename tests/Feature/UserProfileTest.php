@@ -14,11 +14,7 @@ class UserProfileTest extends TestCase
     /** @test */
     public function authenticated_user_can_update_profile()
     {
-        $this->assertCount(0, Activity::all());
-
         $this->signIn();
-
-        $this->assertCount(1, Activity::all());
 
         $credentials = [
             'name' => 'john',
@@ -32,7 +28,7 @@ class UserProfileTest extends TestCase
         $this->user->refresh();
         $this->assertDatabaseHas('users', $credentials);
 
-        $this->assertCount(2, Activity::all());
+        $this->assertCount(1, Activity::all());
 
         $this->assertDatabaseHas('activity_log', ['description' => 'A user was updated']);
     }
@@ -56,7 +52,7 @@ class UserProfileTest extends TestCase
     /** @test */
     public function unauthorize_user_cannot_update_other_users_profile()
     {
-        $this->signIn();
+        $this->signIn(UserFactory::create()->first());
 
         $johnny = UserFactory::create()->first();
 

@@ -14,8 +14,6 @@ class Role extends Model
 
     protected $guarded = [];
 
-    // protected $with = ['permissions'];
-
     protected static function boot()
     {
         parent::boot();

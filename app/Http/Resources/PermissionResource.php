@@ -18,7 +18,7 @@ class PermissionResource extends JsonResource
         return [
             'id' => $this->id,
             'description' => $this->description,
-            'created_at' => $this->created_at,
+            'created_at' => $this->created_at->format('M d, Y | h:i A'),
         ];
     }
 }

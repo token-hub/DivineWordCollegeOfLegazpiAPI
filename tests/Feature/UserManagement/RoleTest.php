@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\User;
 use Facades\Tests\Setup\PermissionFactory;
 use Facades\Tests\Setup\RoleFactory;
 use Facades\Tests\Setup\RolePermissionFactory;
+use Facades\Tests\Setup\UserFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
@@ -26,13 +28,15 @@ class RoleTest extends TestCase
     /** @test */
     public function authorized_user_can_view_all_roles()
     {
+        $this->withoutExceptionHandling();
+
         $this->getRolesAndPermissions('view role', 2);
 
-        $this->assertCount(7, Activity::all());
+        $this->assertCount(6, Activity::all());
 
         $response = $this->getJson('/api/roles')->assertOk();
 
-        $this->assertSame($response->baseResponse->original->count(), 2);
+        $this->assertSame($response->baseResponse->original->count(), 3);
     }
 
     /** @test */
@@ -40,7 +44,7 @@ class RoleTest extends TestCase
     {
         $role = $this->getRolesAndPermissions('view role');
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
 
         $response = $this->getJson("/api/roles/{$role->first()->id}")->assertOk();
 
@@ -52,12 +56,12 @@ class RoleTest extends TestCase
     {
         $this->getRolesAndPermissions('create role');
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
 
         $this->postJson('/api/roles', [])
             ->assertJsonValidationErrors(['permissions', 'description']);
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
     }
 
     /** @test */
@@ -65,12 +69,12 @@ class RoleTest extends TestCase
     {
         $this->getRolesAndPermissions('create role');
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
 
         $this->postJson('/api/roles', ['description' => 'admin'])
             ->assertJsonValidationErrors('description');
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
     }
 
     /** @test */
@@ -78,7 +82,7 @@ class RoleTest extends TestCase
     {
         $this->getRolesAndPermissions('create role');
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
         
         $this->postJson('/api/roles', ['description' => 'new role', 'permissions' => Permission::first()->id])
             ->assertExactJson(['message' => 'New role successfully added']);
@@ -89,7 +93,7 @@ class RoleTest extends TestCase
 
         $this->assertSame($latestRolePermissions, Permission::first()->id);
 
-        $this->assertCount(5, Activity::all());
+        $this->assertCount(4, Activity::all());
     }
 
     /** @test */
@@ -99,13 +103,13 @@ class RoleTest extends TestCase
 
         $newPermission = PermissionFactory::create()->first();
 
-        $this->assertCount(5, Activity::all());
+        $this->assertCount(4, Activity::all());
 
         tap($role->first(), function ($role) use ($newPermission) {
             $this->putJson('/api/roles/'.$role->id, ['description' => 'admin2', 'permissions' => $newPermission->id])
             ->assertExactJson(['message' => 'Role was successfully updated']);
 
-            $this->assertCount(6, Activity::all());
+            $this->assertCount(5, Activity::all());
 
             $role->refresh();
 
@@ -119,7 +123,7 @@ class RoleTest extends TestCase
     {
         $role = $this->getRolesAndPermissions('delete role');
 
-        $this->assertCount(4, Activity::all());
+        $this->assertCount(3, Activity::all());
  
         tap($role->first()->id, function ($roleId) use ($role) {
             $str = trim(preg_replace('/\s*\([^)]*\)/', '', implode("", $role->pluck('id')->toArray())));
@@ -127,7 +131,7 @@ class RoleTest extends TestCase
             $this->deleteJson('/api/roles/'.$str)
             ->assertExactJson(['message' => 'Role/s was successfully deleted']);
 
-            $this->assertCount(5, Activity::all());
+            $this->assertCount(4, Activity::all());
 
             $this->assertDatabaseMissing('Roles', ['id' => $roleId]);
             $this->assertDatabaseMissing('permission_role', ['id' => $roleId]);
@@ -139,17 +143,19 @@ class RoleTest extends TestCase
     {
         RoleFactory::create();
 
-        $this->assertCount(3, Activity::all());
-
-        $this->deleteJson('/api/roles/1')
-            ->assertStatus(403);
-
-        $this->assertCount(3, Activity::all());
+        $this->assertCount(2, Activity::all());
 
         $this->signOut();
 
         $this->deleteJson('/api/roles/1')
-            ->assertStatus(401);
+            ->assertStatus(401); 
+
+        $this->signIn(User::all()->last());
+
+        $this->deleteJson('/api/roles/1')
+            ->assertStatus(403);
+
+        $this->assertCount(2, Activity::all());
     }
 
     public function getRolesAndPermissions($permission = '', $roleCnt = 1)

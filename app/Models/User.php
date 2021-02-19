@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Jobs\ProcessEmailVerification;
 use App\Jobs\ProcessResetPassword;
+use App\Scopes\RolesScope;
 use App\Traits\ActivityLog;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,8 +39,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_active'
     ];
 
-    // protected $guarded = [];
-
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -56,8 +55,19 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        'email_verified_at' => 'datetime:M d, Y h:i A',
+        'updated_at' => 'datetime:M d, Y h:i A',
+        'created_at' => 'datetime:M d, Y h:i A',
     ];
+
+    // protected $with = ['roles'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new RolesScope());
+    }
 
     public function isAdmin()
     {

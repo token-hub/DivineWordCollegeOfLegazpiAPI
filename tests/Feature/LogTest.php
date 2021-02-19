@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Facades\Tests\Setup\UserFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
@@ -14,9 +15,7 @@ class LogTest extends TestCase
     /** @test */
     public function log_request_to_view_all_the_logs()
     {
-        $this->assertCount(0, Activity::all());
         $this->signIn();
-        $this->assertCount(1, Activity::all());
 
         $this->getJson('/api/logs')
             ->assertStatus(200);
@@ -28,12 +27,21 @@ class LogTest extends TestCase
     public function log_request_to_view_a_specific_log()
     {
         $this->signIn();
-        $this->assertCount(1, Activity::all());
+
+        $credentials2 = [
+            'name' => 'john',
+            'email' => $this->user->email,
+            'username' => 'johnjohn',
+        ];
+
+        $this->putJson('/api/profile/'.$this->user->id, $credentials2)
+        ->assertStatus(200);
+
         $response = $this->getJson('/api/logs/1')->assertOk();
 
         $data = $response->baseResponse->original->toArray();
 
         $this->assertSame(1, $data['id']);
-        $this->assertSame('A user was created', $data['description']);
+        $this->assertSame('A user was updated', $data['description']);
     }
 }

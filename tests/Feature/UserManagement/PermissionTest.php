@@ -26,7 +26,7 @@ class PermissionTest extends TestCase
         PermissionFactory::count(3)->create();
 
         $this->assertCount(4, Permission::all());
-        $this->assertCount(5, Activity::all());
+        $this->assertCount(4, Activity::all());
 
         $this->assertDatabaseHas('Permissions', ['description' => 'view permission']);
         $response = $this->getJson('/api/permissions')->assertOk();

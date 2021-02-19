@@ -10,7 +10,7 @@ class UserPolicy extends BasePolicy
     {
         return $user->roles->flatmap(function ($role) {
             return $role->permissions->pluck('description')->unique();
-        })->intersect(['view user', 'update user', 'delete role'])->count() > 0;
+        })->intersect(['view user', 'update user', 'delete user', 'activate user', 'deactivate user'])->count() > 0;
     }
 
     public function update(User $user, User $model)
