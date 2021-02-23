@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Facades\Tests\Setup\RolePermissionFactory;
 use Facades\Tests\Setup\UserFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -47,15 +48,16 @@ class UserTest extends TestCase
     {
         $this->getRolesUsersPermissionsAndAssertActivities('delete user');
 
-        $id = User::latest()->get()->first()->id;
-
-        $this->deleteJson("/api/users/{$id}")
+        tap(User::all()->pluck('id')->toArray(), function($ids){
+            $str = trim(preg_replace('/\s*\([^)]*\)/', '', implode(",", $ids)));
+            $this->deleteJson("/api/users/{$str}")
             ->assertOk()
-            ->assertJson(['message' => 'User successfully delete']);
+            ->assertJson(['message' => 'User/s successfully deleted']);
 
-        $this->assertDatabaseMissing('activity_log', ['causer_id' => $id]);
+            $this->assertDatabaseMissing('activity_log', ['causer_id' => $ids[0]]);
 
-        $this->assertDatabaseMissing('users', ['id' => $id]);
+            $this->assertDatabaseMissing('users', ['id' => $ids[0]]);
+        });
     }
 
     /** @test */
@@ -71,7 +73,7 @@ class UserTest extends TestCase
 
         $this->assertCount(5, Activity::all());
 
-        $this->assertSame($user->is_active, '1');
+        $this->assertTrue(!!$user->is_active);
     }
 
     /** @test */
@@ -89,7 +91,7 @@ class UserTest extends TestCase
 
         $this->assertCount(8, Activity::all());
 
-        $this->assertSame($user->is_active, '0');
+        $this->assertFalse(!!$user->is_active);
     }
 
     /** @test */
@@ -99,10 +101,12 @@ class UserTest extends TestCase
 
         $this->getJson('/api/users')->assertStatus(401);
 
+        activity()->disableLogging();
         $this->getRolesAndPermissions('view role', null, ['description' => 'notAdmin']);
-
+        activity()->enableLogging();
+        
         $user = User::All()->last();
-
+       
         $this->signIn($user);
 
         $this->getJson('/api/users')->assertStatus(403);
@@ -128,8 +132,6 @@ class UserTest extends TestCase
         
         UserFactory::count(3)->create($userParams);
 
-       
-
-        // $this->assertCount(7, Activity::all());
+        $this->assertCount(7, Activity::all());
     }
 }

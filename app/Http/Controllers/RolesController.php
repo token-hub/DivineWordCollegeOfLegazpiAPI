@@ -25,7 +25,7 @@ class RolesController extends Controller
     }
 
     public function store(RoleStoreRequest $request)
-    {  
+    {
         Role::create(Arr::only($request->validated(), ['description']))
             ->permissions()
             ->attach($request->validated()['permissions']);
@@ -49,7 +49,7 @@ class RolesController extends Controller
 
         $ids = array_map('intval', explode(',', $roleIDs));
 
-        Role::find($ids)->map(function($role){
+        Role::find($ids)->map(function ($role) {
             $role->delete();
         });
 

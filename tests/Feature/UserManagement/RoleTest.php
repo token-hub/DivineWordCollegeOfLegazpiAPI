@@ -8,8 +8,6 @@ use App\Models\User;
 use Facades\Tests\Setup\PermissionFactory;
 use Facades\Tests\Setup\RoleFactory;
 use Facades\Tests\Setup\RolePermissionFactory;
-use Facades\Tests\Setup\UserFactory;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -28,8 +26,6 @@ class RoleTest extends TestCase
     /** @test */
     public function authorized_user_can_view_all_roles()
     {
-        $this->withoutExceptionHandling();
-
         $this->getRolesAndPermissions('view role', 2);
 
         $this->assertCount(6, Activity::all());
@@ -83,12 +79,12 @@ class RoleTest extends TestCase
         $this->getRolesAndPermissions('create role');
 
         $this->assertCount(3, Activity::all());
-        
-        $this->postJson('/api/roles', ['description' => 'new role', 'permissions' => Permission::first()->id])
+
+        $this->postJson('/api/roles', ['description' => 'new role', 'permissions' => Permission::all()->pluck('id')->toArray()])
             ->assertExactJson(['message' => 'New role successfully added']);
 
         $this->assertDatabaseHas('Roles', ['description' => 'new role']);
-        
+
         $latestRolePermissions = Role::all()->last()->permissions->pluck('id')->first();
 
         $this->assertSame($latestRolePermissions, Permission::first()->id);
@@ -124,10 +120,10 @@ class RoleTest extends TestCase
         $role = $this->getRolesAndPermissions('delete role');
 
         $this->assertCount(3, Activity::all());
- 
+
         tap($role->first()->id, function ($roleId) use ($role) {
-            $str = trim(preg_replace('/\s*\([^)]*\)/', '', implode("", $role->pluck('id')->toArray())));
-       
+            $str = trim(preg_replace('/\s*\([^)]*\)/', '', implode('', $role->pluck('id')->toArray())));
+
             $this->deleteJson('/api/roles/'.$str)
             ->assertExactJson(['message' => 'Role/s was successfully deleted']);
 
@@ -148,7 +144,7 @@ class RoleTest extends TestCase
         $this->signOut();
 
         $this->deleteJson('/api/roles/1')
-            ->assertStatus(401); 
+            ->assertStatus(401);
 
         $this->signIn(User::all()->last());
 

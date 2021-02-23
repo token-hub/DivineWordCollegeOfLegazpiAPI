@@ -27,10 +27,14 @@ class UserController extends Controller
         return response()->json(['message' => "User account was successfully {$state}"], 200);
     }
 
-    public function destroy(User $user, UserViewAnyRequest $request)
+    public function destroy($userIds, UserViewAnyRequest $request)
     {
-        $user->delete();
+        $ids = array_map('intval', explode(',', $userIds));
+       
+        User::find($ids)->map(function($role){
+            $role->delete();
+        });
 
-        return response()->json(['message' => 'User successfully delete'], 200);
+        return response()->json(['message' => 'User/s successfully deleted'], 200);
     }   
 }
