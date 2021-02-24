@@ -28,6 +28,6 @@ class RoleFactory
     {
         $this->user = $this->user ?? User::factory()->create()->first();
 
-        return Role::factory()->for($this->user)->create($this->roleParams);
+        return Role::factory()->create($this->roleParams)->users()->attach($this->user);
     }
 }

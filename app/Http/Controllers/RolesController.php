@@ -36,9 +36,15 @@ class RolesController extends Controller
     public function update(Role $role, RoleUpdateRequest $request)
     {
         $role->update(Arr::only($request->validated(), ['description']));
-        $role->permissions()->sync($request->validated()['permissions']);
+        $response = $role->permissions()->sync($request->validated()['permissions']);
 
-        return response()->json(['message' => 'Role was successfully updated'], 200);
+        $isPermissionsWasNotChanged = empty($response['attached']) && empty($response['detached']) && empty($response['updated']);
+
+        $message = ($role->wasChanged() || !$isPermissionsWasNotChanged)
+        ? 'Role was successfully updated'
+        : 'Nothing to update';
+
+        return response()->json(compact('message'), 200);
     }
 
     public function destroy($roleIDs, RoleDeleteRequest $request)

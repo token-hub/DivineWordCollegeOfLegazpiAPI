@@ -25,7 +25,6 @@ class UserViewAnyRequest extends FormRequest
     public function rules()
     {
         return [
-            //
         ];
     }
 }

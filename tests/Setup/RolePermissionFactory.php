@@ -53,10 +53,11 @@ class RolePermissionFactory
     {
         $this->user = $this->user ?? User::factory()->create();
 
-        return Role::factory()->for($this->user)
+        return Role::factory()
             ->count($this->rolesCount)
             ->create($this->roleParams)
                 ->each(function ($role) {
+                    $role->users()->save($this->user);
                     $role->permissions()->saveMany(
                         Permission::factory()
                         ->count($this->permissionsCount)

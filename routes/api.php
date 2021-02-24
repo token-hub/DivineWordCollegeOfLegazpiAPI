@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\UserAccountStatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
 use Illuminate\Http\Request;
@@ -35,6 +36,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::put('/users/{user}', [UserController::class, 'update']);
+
+    Route::put('/users/status/{user}', UserAccountStatusController::class);
 
     Route::get('/logs', [LogsController::class, 'index']);
     Route::get('/logs/{log}', [LogsController::class, 'show']);

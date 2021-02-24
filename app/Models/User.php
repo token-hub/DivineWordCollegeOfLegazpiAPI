@@ -36,7 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'username',
-        'is_active'
+        'is_active',
     ];
 
     /**
@@ -92,6 +92,6 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function roles()
     {
-        return $this->hasMany(Role::class);
+        return $this->BelongsToMany(Role::class);
     }
 }

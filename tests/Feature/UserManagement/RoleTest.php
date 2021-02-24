@@ -95,22 +95,44 @@ class RoleTest extends TestCase
     /** @test */
     public function authorized_user_can_update_a_role()
     {
-        $role = $this->getRolesAndPermissions('update role');
+        $role = $this->getRolesAndPermissions('update role', 1, 1);
 
-        $newPermission = PermissionFactory::create()->first();
+        tap($role->first(), function ($role) {
+            $newPermissions = [
+                PermissionFactory::create()->first()->id,
+                PermissionFactory::create()->first()->id,
+            ];
 
-        $this->assertCount(4, Activity::all());
+            $this->assertCount(4, Activity::all());
 
-        tap($role->first(), function ($role) use ($newPermission) {
-            $this->putJson('/api/roles/'.$role->id, ['description' => 'admin2', 'permissions' => $newPermission->id])
-            ->assertExactJson(['message' => 'Role was successfully updated']);
-
-            $this->assertCount(5, Activity::all());
+            $this->putJson('/api/roles/'.$role->id, ['description' => 'editor', 'permissions' => $newPermissions])
+            ->assertJsonFragment(['message' => 'Role was successfully updated']);
 
             $role->refresh();
+            $this->assertCount(5, Activity::all());
 
-            $this->assertSame($role->description, 'admin2');
-            $this->assertTrue($role->permissions->contains($newPermission->id));
+            $this->assertSame($role->description, 'editor');
+            $this->assertSame($role->permissions->pluck('id')->toArray(), $newPermissions);
+
+            // send identical description but diffent permissions
+            $this->putJson('/api/roles/'.$role->id, ['description' => 'editor', 'permissions' => [$newPermissions[0]]])
+            ->assertJsonFragment(['message' => 'Role was successfully updated']);
+
+            $role->refresh();
+            $this->assertCount(5, Activity::all());
+
+            // send identical permissions but diffent description
+            $this->putJson('/api/roles/'.$role->id, ['description' => 'checker', 'permissions' => [$newPermissions[0]]])
+            ->assertJsonFragment(['message' => 'Role was successfully updated']);
+
+            $this->assertCount(6, Activity::all());
+            $role->refresh();
+
+            // send identical permissions and description
+            $this->putJson('/api/roles/'.$role->id, ['description' => 'checker', 'permissions' => [$newPermissions[0]]])
+            ->assertJsonFragment(['message' => 'Nothing to update']);
+
+            $this->assertCount(6, Activity::all());
         });
     }
 
@@ -154,12 +176,11 @@ class RoleTest extends TestCase
         $this->assertCount(2, Activity::all());
     }
 
-    public function getRolesAndPermissions($permission = '', $roleCnt = 1)
+    public function getRolesAndPermissions($permission = '', $roleCnt = 1, $permissionCount = 2)
     {
         return RolePermissionFactory::user($this->user)
-        ->roleParams(['description' => 'admin'])
         ->rolesCount($roleCnt)
-        ->permissionsCount(2)
+        ->permissionsCount($permissionCount)
         ->permissionParams(['description' => $permission])
         ->create();
     }

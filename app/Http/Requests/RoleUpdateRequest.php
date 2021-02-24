@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RoleUpdateRequest extends FormRequest
 {
@@ -14,7 +14,12 @@ class RoleUpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('viewAny', new Role());
+        return $this->user()->can('viewAny', $this->role());
+    }
+
+    public function role()
+    {
+        return $this->route('role');
     }
 
     /**
@@ -25,7 +30,7 @@ class RoleUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'description' => ['required', 'unique:roles'],
+            'description' => ['required', Rule::unique('roles')->ignore($this->role())],
             'permissions' => ['required', 'exists:permissions,id'],
         ];
     }
