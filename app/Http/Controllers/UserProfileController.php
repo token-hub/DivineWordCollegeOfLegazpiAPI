@@ -7,7 +7,7 @@ use App\Models\User;
 
 class UserProfileController extends Controller
 {
-    public function update(User $user, UserProfileRequest $request)
+    public function __invoke(User $user, UserProfileRequest $request)
     {
         $user->update($request->validated());
 

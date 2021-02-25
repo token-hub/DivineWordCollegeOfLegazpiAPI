@@ -20,7 +20,7 @@ class UpdateController extends Controller
         return $update;
     }
 
-    public function create(UpdateStoreRequest $request)
+    public function store(UpdateStoreRequest $request)
     {
         Update::create($request->validated());
 

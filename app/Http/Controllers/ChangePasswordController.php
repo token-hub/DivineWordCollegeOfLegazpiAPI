@@ -7,7 +7,7 @@ use App\Models\User;
 
 class ChangePasswordController extends Controller
 {
-    public function update(User $user, ChangePasswordRequest $request)
+    public function __invoke(User $user, ChangePasswordRequest $request)
     {
         $user->update(['password' => $request['new_password']]);
 

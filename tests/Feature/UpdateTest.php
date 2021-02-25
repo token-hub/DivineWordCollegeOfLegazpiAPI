@@ -23,6 +23,8 @@ class UpdateTest extends TestCase
     /** @test */
     public function authorized_user_can_view_all_the_updates()
     {
+        $this->withoutExceptionHandling();
+
         $this->getRolesAndPermissions('view update');
 
         UpdateFactory::count(3)->create();

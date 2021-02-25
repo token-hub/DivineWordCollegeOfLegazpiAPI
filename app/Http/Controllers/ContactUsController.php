@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 
 class ContactUsController extends Controller
 {
-    public function store(Request $request)
+    public function __invoke(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required',

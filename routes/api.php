@@ -23,22 +23,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/contactUs', [ContactUsController::class, 'store'])->middleware('throttle:contactUs');
+Route::post('/contactUs', ContactUsController::class)->middleware('throttle:contactUs');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
 
-    // user
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{user}', [UserController::class, 'show']);
-    Route::delete('/users/{user}', [UserController::class, 'destroy']);
-    Route::put('/users/{user}', [UserController::class, 'update']);
+    // users
+    Route::apiResource('users', UserController::class, ['except' => ['store']]);
 
     // user profile
-    Route::put('/password/update/{user}', [ChangePasswordController::class, 'update']);
-    Route::put('/profile/{user}', [UserProfileController::class, 'update']);
+    Route::put('/password/update/{user}', ChangePasswordController::class);
+    Route::put('/profile/{user}', UserProfileController::class);
 
     // user account status
     Route::put('/users/status/{user}', UserAccountStatusController::class);
@@ -51,18 +48,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/permissions', PermissionController::class);
 
     // roles
-    Route::get('/roles', [RolesController::class, 'index']);
-    Route::post('/roles', [RolesController::class, 'store']);
-    Route::get('/roles/{role}', [RolesController::class, 'show']);
-    Route::put('/roles/{role}', [RolesController::class, 'update']);
-    Route::delete('/roles/{role}', [RolesController::class, 'destroy']);
+    Route::apiResource('roles', RolesController::class);
 
     // updates
-    Route::get('/updates', [UpdateController::class, 'index']);
-    Route::post('/updates', [UpdateController::class, 'create']);
-    Route::get('/updates/{update}', [UpdateController::class, 'show']);
-    Route::put('/updates/{update}', [UpdateController::class, 'update']);
-    Route::delete('/updates/{update}', [UpdateController::class, 'destroy']);
+    Route::apiResource('updates', UpdateController::class);
 });
 
 Route::post('/tokens/create', function (Request $request) {
