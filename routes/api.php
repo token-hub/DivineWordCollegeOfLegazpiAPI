@@ -5,6 +5,7 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\UserAccountStatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
@@ -29,26 +30,39 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    Route::put('/password/update/{user}', [ChangePasswordController::class, 'update']);
-    Route::put('/profile/{user}', [UserProfileController::class, 'update']);
-
+    // user
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::put('/users/{user}', [UserController::class, 'update']);
 
+    // user profile
+    Route::put('/password/update/{user}', [ChangePasswordController::class, 'update']);
+    Route::put('/profile/{user}', [UserProfileController::class, 'update']);
+
+    // user account status
     Route::put('/users/status/{user}', UserAccountStatusController::class);
 
+    // logs
     Route::get('/logs', [LogsController::class, 'index']);
     Route::get('/logs/{log}', [LogsController::class, 'show']);
 
+    // permissions
     Route::get('/permissions', PermissionController::class);
 
+    // roles
     Route::get('/roles', [RolesController::class, 'index']);
     Route::post('/roles', [RolesController::class, 'store']);
     Route::get('/roles/{role}', [RolesController::class, 'show']);
     Route::put('/roles/{role}', [RolesController::class, 'update']);
     Route::delete('/roles/{role}', [RolesController::class, 'destroy']);
+
+    // updates
+    Route::get('/updates', [UpdateController::class, 'index']);
+    Route::post('/updates', [UpdateController::class, 'create']);
+    Route::get('/updates/{update}', [UpdateController::class, 'show']);
+    Route::put('/updates/{update}', [UpdateController::class, 'update']);
+    Route::delete('/updates/{update}', [UpdateController::class, 'destroy']);
 });
 
 Route::post('/tokens/create', function (Request $request) {
