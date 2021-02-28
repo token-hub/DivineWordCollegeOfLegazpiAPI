@@ -14,6 +14,8 @@ class Update extends Model
     protected $casts = [
         'from' => 'datetime',
         'to' => 'datetime',
+        'updated_at' => 'datetime:M d, Y | h:i A',
+        'created_at' => 'datetime:M d, Y | h:i A',
     ];
 
     protected $guarded = [];

@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UpdatePolicy
+class UpdatePolicy extends BasePolicy
 {
     use HandlesAuthorization;
 

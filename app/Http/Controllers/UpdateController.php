@@ -6,18 +6,19 @@ use App\Http\Requests\UpdateDeleteRequest;
 use App\Http\Requests\UpdateStoreRequest;
 use App\Http\Requests\UpdateUpdateRequest;
 use App\Http\Requests\UpdateViewRequest;
+use App\Http\Resources\UpdateResource;
 use App\Models\Update;
 
 class UpdateController extends Controller
 {
     public function index(UpdateViewRequest $request)
     {
-        return Update::all();
+        return UpdateResource::collection(Update::latest()->get());
     }
 
     public function show(Update $update, UpdateViewRequest $request)
     {
-        return $update;
+        return new UpdateResource($update);
     }
 
     public function store(UpdateStoreRequest $request)
