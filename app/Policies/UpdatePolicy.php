@@ -2,19 +2,12 @@
 
 namespace App\Policies;
 
+use App\Models\Update;
 use App\Models\User;
-use Illuminate\Auth\Access\HandlesAuthorization;
 
 class UpdatePolicy extends BasePolicy
 {
-    use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     *
-     * @return mixed
-     */
-    public function viewAny(User $user)
+    public function viewAny(User $user, Update $update)
     {
         return $user->roles->flatmap(function ($role) {
             return $role->permissions->pluck('description')->unique();

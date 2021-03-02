@@ -47,13 +47,15 @@ class RolesController extends Controller
         return response()->json(compact('message'), 200);
     }
 
-    public function destroy($roleIDs, RoleDeleteRequest $request)
+    public function destroy($roleObj, RoleDeleteRequest $request)
     {
         // $roleIDs is coming from an axios http request so it will be
         // string when it got here, so we need to turn it back to array,
         // before we use it
 
-        $ids = array_map('intval', explode(',', $roleIDs));
+        $ids = array_map(function ($role) {
+            return json_decode($role)->id;
+        }, json_decode($roleObj)->roleIds);
 
         Role::find($ids)->map(function ($role) {
             $role->delete();

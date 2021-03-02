@@ -3,8 +3,9 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
-class RolesResource extends JsonResource
+class SlideResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +17,9 @@ class RolesResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'src' => Storage::url($this->slide),
+            'alt' => $this->slide,
             'id' => $this->id,
-            'description' => $this->description,
-            'created_at' => $this->created_at->format('M d, Y | h:i A'),
-            'permissions' => $this->permissions,
         ];
     }
 }

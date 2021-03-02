@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Update;
+use App\Models\Slide;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateDeleteRequest extends FormRequest
+class SlideUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class UpdateDeleteRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('viewAny', new Update());
+        return $this->user()->can('viewAny', new Slide());
     }
 
     /**

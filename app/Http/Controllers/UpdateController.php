@@ -39,9 +39,11 @@ class UpdateController extends Controller
         return response()->json(compact('message'), 200);
     }
 
-    public function destroy(Update $update, UpdateDeleteRequest $request)
+    public function destroy($updateIds, UpdateDeleteRequest $request)
     {
-        $update->delete();
+        $ids = array_map('intval', explode(',', $updateIds));
+
+        Update::destroy($ids);
 
         return response()->json(['message' => 'Update was successfully deleted']);
     }

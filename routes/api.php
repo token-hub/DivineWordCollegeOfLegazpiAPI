@@ -5,6 +5,8 @@ use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\SlideController;
+use App\Http\Controllers\SlideReorderController;
 use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\UserAccountStatusController;
 use App\Http\Controllers\UserController;
@@ -52,6 +54,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // updates
     Route::apiResource('updates', UpdateController::class);
+
+    // slides
+    Route::get('/slides', [SlideController::class, 'index']);
+    Route::post('/slides', [SlideController::class, 'store']);
+    Route::delete('/slides/{slide}', [SlideController::class, 'destroy']);
+
+    // slides Reorder
+    Route::put('/slides/reorder', SlideReorderController::class);
 });
 
 Route::post('/tokens/create', function (Request $request) {

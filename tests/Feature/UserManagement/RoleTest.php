@@ -8,6 +8,7 @@ use App\Models\User;
 use Facades\Tests\Setup\PermissionFactory;
 use Facades\Tests\Setup\RoleFactory;
 use Facades\Tests\Setup\RolePermissionFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -139,14 +140,18 @@ class RoleTest extends TestCase
     /** @test */
     public function authorized_user_can_delete_roles()
     {
+        $this->withoutExceptionHandling();
+
         $role = $this->getRolesAndPermissions('delete role');
 
         $this->assertCount(3, Activity::all());
 
-        tap($role->first()->id, function ($roleId) use ($role) {
-            $str = trim(preg_replace('/\s*\([^)]*\)/', '', implode('', $role->pluck('id')->toArray())));
+        tap($role->first()->id, function ($roleId) {
+            $data = new Collection([
+                'roleIds' => [json_encode(['id' => $roleId])],
+            ]);
 
-            $this->deleteJson('/api/roles/'.$str)
+            $this->deleteJson('/api/roles/'.$data)
             ->assertExactJson(['message' => 'Role/s was successfully deleted']);
 
             $this->assertCount(4, Activity::all());

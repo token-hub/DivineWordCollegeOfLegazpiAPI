@@ -19,4 +19,9 @@ class Update extends Model
     ];
 
     protected $guarded = [];
+
+    public function setCategoryAttribute($category)
+    {
+        $this->attributes['category'] = $category === 1 ? 'announcements' : 'news-and-events';
+    }
 }

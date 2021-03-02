@@ -43,8 +43,16 @@ class UpdateTest extends TestCase
 
         $this->assertCount(6, Activity::all());
 
-        $this->getJson("/api/updates/{$updates->first()->id}")
-            ->assertJsonFragment($updates->first()->toArray());
+        $response = $this->getJson("/api/updates/{$updates->first()->id}");
+
+        $toSee = [
+            'title' => $updates->first()->title,
+            'category' => $updates->first()->category,
+            'updates' => $updates->first()->updates,
+            'id' => $updates->first()->id,
+        ];
+
+        $response->assertJsonFragment($toSee);
     }
 
     /** @test */
@@ -66,7 +74,7 @@ class UpdateTest extends TestCase
 
         $credentials = [
             'title' => 'title',
-            'category' => 'announcements',
+            'category' => 1,
             'updates' => 'sample updates',
         ];
 
@@ -77,12 +85,18 @@ class UpdateTest extends TestCase
 
         $this->assertCount(4, Activity::all());
 
-        $this->assertDatabaseHas('updates', $credentials);
+        $this->assertDatabaseHas('updates', [
+            'title' => $credentials['title'],
+            'category' => $credentials['category'] === 1 ? 'announcements' : 'news-and-events',
+            'updates' => $credentials['updates'],
+        ]);
     }
 
     /** @test */
     public function authorized_user_can_update_a_specific_update()
     {
+        $this->withoutExceptionHandling();
+
         $this->getRolesAndPermissions('update update');
 
         $updates = UpdateFactory::count(3)->create();
@@ -91,7 +105,7 @@ class UpdateTest extends TestCase
 
         $credentials = [
             'title' => 'title',
-            'category' => 'announcements',
+            'category' => 1,
             'updates' => 'sample updates',
         ];
 
@@ -104,7 +118,7 @@ class UpdateTest extends TestCase
             $this->assertCount(7, Activity::all());
 
             $this->assertSame($credentials['title'], $update->title);
-            $this->assertSame($credentials['category'], $update->category);
+            $this->assertSame($credentials['category'], $update->category === 'announcements' ? 1 : 2);
             $this->assertSame($credentials['updates'], $update->updates);
 
             // submitted identical data
@@ -124,7 +138,14 @@ class UpdateTest extends TestCase
 
         $this->assertCount(6, Activity::all());
 
-        $this->deleteJson("/api/updates/{$updates->first()->id}")
+        // array to string and remove [] in the string
+        $data = preg_replace("/\([^)]+\)/", '', implode(',', [
+            $updates[0]->id,
+            $updates[1]->id,
+            $updates[2]->id,
+        ]));
+
+        $this->deleteJson("/api/updates/{$data}")
             ->assertJsonFragment(['message' => 'Update was successfully deleted']);
 
         $this->assertDatabaseMissing('updates', $updates->first()->toArray());
