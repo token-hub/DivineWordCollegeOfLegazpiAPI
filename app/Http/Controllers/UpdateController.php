@@ -23,6 +23,8 @@ class UpdateController extends Controller
 
     public function store(UpdateStoreRequest $request)
     {
+        // return response()->json(['message' => $request->validated()['updates']], 201);
+
         Update::create($request->validated());
 
         return response()->json(['message' => 'Update was successfully added'], 201);

@@ -11,6 +11,7 @@ use App\Http\Controllers\UpdateController;
 use App\Http\Controllers\UserAccountStatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\WysiwygImageController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -62,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // slides Reorder
     Route::put('/slides/reorder', SlideReorderController::class);
+
+    // Image upload for wysiwyg
+    Route::post('/image', WysiwygImageController::class);
 });
 
 Route::post('/tokens/create', function (Request $request) {

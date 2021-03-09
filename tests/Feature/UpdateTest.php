@@ -72,6 +72,8 @@ class UpdateTest extends TestCase
     {
         $this->getRolesAndPermissions('add update');
 
+        Storage::fake('images/slides');
+
         $credentials = [
             'title' => 'title',
             'category' => 1,
@@ -95,8 +97,6 @@ class UpdateTest extends TestCase
     /** @test */
     public function authorized_user_can_update_a_specific_update()
     {
-        $this->withoutExceptionHandling();
-
         $this->getRolesAndPermissions('update update');
 
         $updates = UpdateFactory::count(3)->create();

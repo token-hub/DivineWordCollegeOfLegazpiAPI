@@ -19,7 +19,7 @@ class CreateUpdatesTable extends Migration
             $table->string('category');
             $table->timestamp('from')->nullable();
             $table->timestamp('to')->nullable();
-            $table->text('updates');
+            $table->longText('updates');
             $table->timestamps();
         });
     }
