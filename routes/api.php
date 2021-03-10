@@ -7,7 +7,9 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SlideController;
 use App\Http\Controllers\SlideReorderController;
+use App\Http\Controllers\UpdateAnnouncementsController;
 use App\Http\Controllers\UpdateController;
+use App\Http\Controllers\UpdateNewsAndEventsController;
 use App\Http\Controllers\UserAccountStatusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserProfileController;
@@ -27,6 +29,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/contactUs', ContactUsController::class)->middleware('throttle:contactUs');
+Route::get('/slides', [SlideController::class, 'index']);
+Route::get('/updates', [UpdateController::class, 'index']);
+Route::get('/updates/announcements', UpdateAnnouncementsController::class);
+Route::get('/updates/newsAndEvents', UpdateNewsAndEventsController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -54,10 +60,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('roles', RolesController::class);
 
     // updates
-    Route::apiResource('updates', UpdateController::class);
+    Route::apiResource('updates', UpdateController::class, ['except' => ['index']]);
 
     // slides
-    Route::get('/slides', [SlideController::class, 'index']);
     Route::post('/slides', [SlideController::class, 'store']);
     Route::delete('/slides/{slide}', [SlideController::class, 'destroy']);
 

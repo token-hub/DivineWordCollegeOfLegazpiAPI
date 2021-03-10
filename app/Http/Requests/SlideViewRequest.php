@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\slide;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SlideViewRequest extends FormRequest
@@ -14,7 +13,7 @@ class SlideViewRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('viewAny', new slide());
+        return true;
     }
 
     /**

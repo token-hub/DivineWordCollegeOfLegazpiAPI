@@ -16,6 +16,7 @@ class CreateUpdatesTable extends Migration
         Schema::create('updates', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('subtitle')->nullable();
             $table->string('category');
             $table->timestamp('from')->nullable();
             $table->timestamp('to')->nullable();

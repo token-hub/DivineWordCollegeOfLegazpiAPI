@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Update;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateViewRequest extends FormRequest
@@ -14,7 +13,7 @@ class UpdateViewRequest extends FormRequest
      */
     public function authorize()
     {
-        return $this->user()->can('viewAny', new Update());
+        return true;
     }
 
     /**

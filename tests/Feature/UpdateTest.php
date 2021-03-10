@@ -6,6 +6,7 @@ use Facades\Tests\Setup\RolePermissionFactory;
 use Facades\Tests\Setup\UpdateFactory;
 use Facades\Tests\Setup\UserFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
 
@@ -76,6 +77,7 @@ class UpdateTest extends TestCase
 
         $credentials = [
             'title' => 'title',
+            'subtitle' => 'subtitle',
             'category' => 1,
             'updates' => 'sample updates',
         ];
@@ -89,6 +91,7 @@ class UpdateTest extends TestCase
 
         $this->assertDatabaseHas('updates', [
             'title' => $credentials['title'],
+            'subtitle' => $credentials['subtitle'],
             'category' => $credentials['category'] === 1 ? 'announcements' : 'news-and-events',
             'updates' => $credentials['updates'],
         ]);
@@ -105,6 +108,7 @@ class UpdateTest extends TestCase
 
         $credentials = [
             'title' => 'title',
+            'subtitle' => 'subtitle',
             'category' => 1,
             'updates' => 'sample updates',
         ];
@@ -120,6 +124,7 @@ class UpdateTest extends TestCase
             $this->assertSame($credentials['title'], $update->title);
             $this->assertSame($credentials['category'], $update->category === 'announcements' ? 1 : 2);
             $this->assertSame($credentials['updates'], $update->updates);
+            $this->assertSame($credentials['subtitle'], $update->subtitle);
 
             // submitted identical data
             $this->put("/api/updates/{$update->id}", $credentials)
@@ -152,22 +157,48 @@ class UpdateTest extends TestCase
     }
 
     /** @test */
+    public function authorized_user_can_request_for_all_announcement_or_newsAndEvents()
+    {
+        $this->withoutExceptionHandling();
+
+        UpdateFactory::count(2)->create(['category' => 1]); // announcements
+        UpdateFactory::count(2)->create(['category' => 2]); // news-and-events
+
+        $this->assertCount(4, Activity::all());
+
+        $announcementsResponse = $this->getJson('/api/updates/announcements')->assertOk();
+
+        tap($announcementsResponse->baseResponse->original, function ($announcements) {
+            $this->assertSame('announcements', $announcements->first()->category);
+            $this->assertSame('announcements', $announcements->last()->category);
+            $this->assertSame($announcements->count(), 2);
+        });
+
+        $newsAndEventsResponse = $this->getJson('/api/updates/newsAndEvents')->assertOk();
+
+        tap($newsAndEventsResponse->baseResponse->original, function ($newsAndEvents) {
+            $this->assertSame('news-and-events', $newsAndEvents->first()->category);
+            $this->assertSame('news-and-events', $newsAndEvents->last()->category);
+            $this->assertSame($newsAndEvents->count(), 2);
+        });
+    }
+
+    /** @test */
     public function unauthorized_user_must_not_access_any_updates_methods_or_pages()
     {
         $this->signOut();
+        UpdateFactory::create()->first();
+        $this->deleteJson('/api/updates/1')->assertStatus(401);
 
-        $this->getJson('/api/updates')->assertStatus(401);
-        $this->assertCount(0, Activity::all());
+        $this->assertCount(1, Activity::all());
 
         $user = UserFactory::create()->first();
-        UpdateFactory::create()->first();
+
         $this->assertCount(2, Activity::all());
 
         $this->signIn($user);
 
-        $this->getJson('/api/updates')->assertStatus(403);
         $this->putJson('/api/updates/1', $this->getCredentials())->assertStatus(403);
-        $this->getJson('/api/updates/1')->assertStatus(403);
         $this->deleteJson('/api/updates/1')->assertStatus(403);
         $this->assertCount(2, Activity::all());
     }

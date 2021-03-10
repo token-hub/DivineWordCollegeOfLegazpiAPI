@@ -179,7 +179,7 @@ class SlideTest extends TestCase
     }
 
     /** @test */
-    public function unauthorized_user_must_not_access_any_slide_methods_or_pages()
+    public function unauthorized_user_must_not_access_any_slide_methods_or_pages_expect_index()
     {
         $this->signOut();
 
@@ -187,15 +187,12 @@ class SlideTest extends TestCase
 
         $this->assertCount(3, Activity::all());
 
-        $this->getJson('/api/slides')
+        $this->deleteJson("/api/slides/{$slide->first()->id}")
             ->assertStatus(401);
 
         $this->signIn(UserFactory::create()->first());
 
         $this->assertCount(4, Activity::all());
-
-        $this->getJson('/api/slides')
-            ->assertStatus(403);
 
         $this->deleteJson("/api/slides/{$slide->first()->id}")
             ->assertStatus(403);

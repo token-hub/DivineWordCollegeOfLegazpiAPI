@@ -17,8 +17,9 @@ class UpdateResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'created_at' => $this->created_at->format('M d, Y | h:i A'),
+            'created_at' => $this->created_at->format('M d, Y h:i A'),
             'title' => $this->title,
+            'subtitle' => $this->subtitle,
             'category' => $this->category,
             'from' => $this->from->format('Y-m-d'),
             'to' => $this->to->format('Y-m-d'),

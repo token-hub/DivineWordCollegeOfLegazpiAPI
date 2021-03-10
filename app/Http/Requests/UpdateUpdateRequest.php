@@ -26,6 +26,7 @@ class UpdateUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required',
+            'subtitle' => ['sometimes', 'required'],
             'category' => ['required', Rule::in([1, 2])],
             'from' => ['sometimes', 'required'],
             'to' => ['sometimes', 'required'],

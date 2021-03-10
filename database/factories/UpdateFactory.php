@@ -23,7 +23,8 @@ class UpdateFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence,
-            'category' => 'announcements',
+            'subtitle' => $this->faker->sentence,
+            'category' => 1,
             'from' => now(),
             'to' => now(),
             'updates' => $this->faker->paragraph,
