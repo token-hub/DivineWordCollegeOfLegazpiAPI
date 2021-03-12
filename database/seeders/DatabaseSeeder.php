@@ -17,13 +17,18 @@ class DatabaseSeeder extends Seeder
     {
         $user = \App\Models\User::factory()->create(['username' => 'dwcladmin', 'password' => 'dwcl1961', 'is_active' => 1]);
 
+        $this->call(PermissionSeeder::class);
+
+        $defaultPermissions = Permission::all()->pluck('id');
+
         Role::factory()->create(['description' => 'admin'])
-                ->each(function ($role) use ($user) {
-                    $role->users()->attach($user);
-                    $role->permissions()->save(
-                        Permission::factory()
-                        ->make(['description' => 'chenelin'])
-                    );
-                });
+            ->each(function ($role) use ($user) {
+                $role->users()->attach($user);
+            });
+
+        Role::factory()->create(['description' => 'maintainer'])
+        ->each(function ($role) use ($defaultPermissions) {
+            $role->permissions()->attach($defaultPermissions);
+        });
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Authentication;
 
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,6 +34,18 @@ class UserRegistrationTest extends TestCase
     /** @test */
     public function user_can_register_an_account()
     {
+        $this->withoutExceptionHandling();
+
+        activity()->disableLogging();
+        $this->seed('PermissionSeeder');
+        $defaultPermissions = Permission::all()->pluck('id');
+
+        Role::factory()->create(['description' => 'maintainer'])
+        ->each(function ($role) use ($defaultPermissions) {
+            $role->permissions()->attach($defaultPermissions);
+        });
+        activity()->enableLogging();
+
         // Notification::fake();
         $this->assertCount(0, Activity::all());
 
@@ -42,6 +56,10 @@ class UserRegistrationTest extends TestCase
         $this->assertDatabaseHas('users', Arr::except($user, ['password_confirmation', 'password']));
 
         $this->assertCount(1, Activity::all());
+
+        $john = User::all()->last();
+
+        $this->assertTrue(in_array('maintainer', $john->roles->pluck('description')->toArray()));
 
         $this->assertDatabaseHas('activity_log', ['description' => 'A user was created']);
 

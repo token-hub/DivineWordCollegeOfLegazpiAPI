@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use function App\Helpers\current_user;
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -72,15 +72,12 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
+        $maintainer = Role::where('description', 'maintainer')->get();
+       
+        $user->roles()->attach($maintainer);
+
         $user->sendEmailVerificationNotification();
 
         return $user;
     }
-
-    // protected function registered(Request $request, $user)
-    // {
-    //     activity()
-    //         ->performedOn(current_user())
-    //         ->log('A user registered');
-    // }
 }
