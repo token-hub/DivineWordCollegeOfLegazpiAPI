@@ -54,6 +54,10 @@ class LoginController extends Controller
         $attempt = Auth::attempt(array_merge($this->credentials($request), ['is_active' => 1]));
 
         if ($attempt) {
+            if (!current_user()->hasVerifiedEmail()) {
+                return response()->json(['message' => 'Your account was not yet verified'], 200);
+            }
+
             activity()
                 ->on(current_user())
                 ->by(current_user())
@@ -63,8 +67,8 @@ class LoginController extends Controller
             return response()->json(['message' => 'Successfully logged in.'], 200);
         }
 
-        return Auth::attempt(array_merge($this->credentials($request)))
-            ? response()->json(['message' => 'Your account is not yet active.'], 200)
+        return  Auth::attempt($this->credentials($request))
+            ? response()->json(['message' => 'Your account is Inactive'], 200)
             : $this->sendFailedLoginResponse($request);
     }
 

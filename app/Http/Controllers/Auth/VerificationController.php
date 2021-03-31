@@ -42,6 +42,6 @@ class VerificationController extends Controller
 
     protected function verified()
     {
-        return redirect()->away('http://localhost:3000/dashboard/login?messages=Account Successfully activated');
+        return redirect()->away('http://www.dwc-legazpi.edu/dashboard/login?messages=Account Successfully verified');
     }
 }

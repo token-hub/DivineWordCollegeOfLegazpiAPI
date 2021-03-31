@@ -34,8 +34,6 @@ class UserRegistrationTest extends TestCase
     /** @test */
     public function user_can_register_an_account()
     {
-        $this->withoutExceptionHandling();
-
         activity()->disableLogging();
         $this->seed('PermissionSeeder');
         $defaultPermissions = Permission::all()->pluck('id');

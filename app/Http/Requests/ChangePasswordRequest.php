@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use App\Rules\IsEqualToCurrentPassword;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Gate;
 
 class ChangePasswordRequest extends FormRequest
 {

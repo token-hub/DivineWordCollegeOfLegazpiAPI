@@ -73,7 +73,7 @@ class RegisterController extends Controller
         ]);
 
         $maintainer = Role::where('description', 'maintainer')->get();
-       
+
         $user->roles()->attach($maintainer);
 
         $user->sendEmailVerificationNotification();
