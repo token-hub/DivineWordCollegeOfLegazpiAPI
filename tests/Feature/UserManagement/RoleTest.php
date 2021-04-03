@@ -8,7 +8,6 @@ use App\Models\User;
 use Facades\Tests\Setup\PermissionFactory;
 use Facades\Tests\Setup\RoleFactory;
 use Facades\Tests\Setup\RolePermissionFactory;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 use Tests\TestCase;
@@ -147,9 +146,9 @@ class RoleTest extends TestCase
         $this->assertCount(3, Activity::all());
 
         tap($role->first()->id, function ($roleId) {
-            $data = new Collection([
-                'roleIds' => [json_encode(['id' => $roleId])],
-            ]);
+            $data = preg_replace("/\([^)]+\)/", '', implode(',', [
+                $roleId,
+            ]));
 
             $this->deleteJson('/api/roles/'.$data)
             ->assertExactJson(['message' => 'Role/s was successfully deleted']);
