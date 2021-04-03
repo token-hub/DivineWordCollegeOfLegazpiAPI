@@ -28,7 +28,17 @@ class UserTest extends TestCase
 
         $response = $this->getJson('/api/users')->assertOk();
 
-        $this->assertSame($response->baseResponse->original->count(), 1);
+        $admin = User::whereHas('roles', function ($q) {
+            $q->where('description', 'admin');
+        })->get()->first();
+
+        tap($response->baseResponse->original, function ($res) use ($admin) {
+            $this->assertSame($res->count(), 1);
+
+            $this->assertNotSame($res->pluck('username'), $this->user->username);
+
+            $this->assertFalse(in_array($admin->username, $res->pluck('username')->toArray()));
+        });
     }
 
     /** @test */
