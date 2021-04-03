@@ -29,6 +29,7 @@ class UpdateStoreRequest extends FormRequest
             'title' => 'required',
             // 1 = announcements, 2 = news-and-events
             'category' => ['required', Rule::in([1, 2])],
+            'subtitle' => ['sometimes', 'required'],
             'from' => ['sometimes', 'required'],
             'to' => ['sometimes', 'required'],
             'updates' => 'required',
