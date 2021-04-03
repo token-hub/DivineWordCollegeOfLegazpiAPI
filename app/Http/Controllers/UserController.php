@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use function App\Helpers\current_user;
 use App\Http\Requests\UserUpdateRequest;
 use App\Http\Requests\UserViewAnyRequest;
 use App\Models\User;
@@ -10,7 +11,10 @@ class UserController extends Controller
 {
     public function index(UserViewAnyRequest $request)
     {
-        return User::all();
+        return User::where('username', '!=', current_user()->username)
+            ->whereHas('roles', function ($q) {
+                $q->where('description', '!=', 'admin');
+            })->get();
     }
 
     public function show(User $user, UserViewAnyRequest $request)

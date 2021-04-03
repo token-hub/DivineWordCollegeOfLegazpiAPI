@@ -22,15 +22,13 @@ class UserTest extends TestCase
     }
 
     /** @test */
-    public function authorized_user_can_view_all_users()
+    public function authorized_user_can_view_all_users_except_the_admins_and_the_current_user()
     {
         $this->getRolesUsersPermissionsAndAssertActivities('view user');
 
         $response = $this->getJson('/api/users')->assertOk();
 
-        $response->assertJsonFragment(['username' => User::first()->username]);
-
-        $this->assertSame($response->baseResponse->original->count(), 5);
+        $this->assertSame($response->baseResponse->original->count(), 1);
     }
 
     /** @test */
